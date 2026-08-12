@@ -506,6 +506,7 @@ def run_momentum_scan():
             "signal": get_signal_label(composite),
             "theme_tag": theme_tag,
             "whale_pct": whale_pct,
+            "scores": scores_dict,
             "reason": generate_bull_reason(scores_dict, inst_str, theme_tag, yoy, change_pct, whale_pct, retail_exiting, tech_flags, t_data, vol, price),
             "history5d": t_data.get("history5d", []) if t_data else []
         })

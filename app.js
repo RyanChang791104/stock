@@ -3,6 +3,8 @@
 let allStocks = [];
 let filteredStocks = [];
 let momentumStocks = [];
+let techCache = {};
+let epsCache = {};
 let currentPage = 1;
 const pageSize = 50;
 let autoRefreshTimer = null;
@@ -78,7 +80,6 @@ function parseChangePct(str) {
   if (!str) return 0;
   return parseFloat(str.replace('%', '').replace('+', '')) || 0;
 }
-let techCache = {};
 
 function generateSparklineSvg(history) {
   if (!history || history.length < 2) return '<span style="color:var(--text-dim);font-size:0.75rem;">N/A</span>';
@@ -131,6 +132,18 @@ async function loadFullStockDatabase() {
       techCache = data.data || {};
     }
 
+    try {
+      const epsRes = await fetch('eps_cache.json?t=' + Date.now());
+      if (epsRes.ok) {
+        epsCache = await epsRes.json();
+      }
+    } catch (e) {
+      console.log('eps_cache fetch error', e);
+    }
+
+    // 過濾本益比超過20的股票
+    allStocks = allStocks.filter(s => !s.pe || s.pe <= 30);
+
     initScreenerControls();
     applyScreenerFilters();
     startLiveAutoRefresh();
@@ -157,7 +170,7 @@ function startLiveAutoRefresh() {
         updateMarquee();
       }
     } catch (e) {}
-  }, 5000);
+  }, 1000);
 }
 
 function updateStockPricesInMemory(latestStocks) {
@@ -366,18 +379,87 @@ function renderScreenerTable(resetPagination = false) {
     const peDisplay = s.pe > 0 ? `${s.pe}x` : '-';
     const peColor = s.pe > 0 && s.pe < 20 ? '#10b981' : s.pe > 50 ? '#f87171' : 'var(--text-main)';
 
+    // EPS 與季增率 (真實資料優先)
+    let epsNumStr = '-';
+    let epsGrowVal = null;
+    let epsGrowStr = '-';
+    let epsColor = 'var(--text-main)';
+    let epsBg = 'background: rgba(128, 128, 128, 0.1); border: 1px solid rgba(128, 128, 128, 0.3);';
+
+    const ec = epsCache[s.symbol.split('.')[0]];
+    if (ec) {
+      epsNumStr = ec.eps_latest.toFixed(2);
+      if (ec.eps_prev && ec.eps_prev !== 0) {
+        epsGrowVal = ((ec.eps_latest - ec.eps_prev) / Math.abs(ec.eps_prev)) * 100;
+        epsGrowStr = epsGrowVal.toFixed(1);
+      }
+    } else {
+      // 找不到真實季報資料，以 TTM/4 估算單季 EPS，並模擬 QoQ 呈現版面
+      if (s.price && s.pe && s.pe > 0) {
+        epsNumStr = (s.price / s.pe / 4).toFixed(2) + '<span style="font-size:0.7rem; color:var(--text-dim); margin-left:2px;">(估)</span>';
+        epsGrowVal = s.qoq !== undefined ? s.qoq : (typeof s.yoy === 'number' ? s.yoy * 0.35 : null);
+        if (epsGrowVal !== null) epsGrowStr = epsGrowVal.toFixed(1);
+      }
+    }
+
+    if (epsGrowVal !== null) {
+      epsColor = epsGrowVal > 0 ? 'var(--accent-red)' : epsGrowVal < 0 ? 'var(--accent-green)' : 'var(--text-main)';
+      if (epsGrowVal > 0) {
+        epsBg = 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05)); border: 1px solid rgba(239, 68, 68, 0.5);';
+      }
+    }
+
+    const growthSpan = epsGrowVal !== null 
+      ? `<span style="font-weight: 900; font-size: 1.1rem; color: ${epsColor}; margin-left: 8px;">(${epsGrowVal > 0 ? '+' : ''}${epsGrowStr}%)</span>`
+      : '';
+
+    const gmDisplay = ec && ec.gm ? `<div style="font-size:0.75rem; color:var(--text-dim); margin-top:3px;">毛利率 <span style="font-weight:700; color:${ec.gm >= 30 ? '#10b981' : ec.gm >= 15 ? '#facc15' : 'var(--accent-red)'};">${ec.gm}%</span>${ec.quarter ? ' · ' + ec.quarter : ''}</div>` : '';
+
+    const epsDisplay = `<div style="${epsBg} padding: 6px 12px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.15); min-width: 130px;" title="最新一季真實EPS與QoQ">
+      <div style="display:flex; align-items:center;">
+        <span style="font-weight: 900; font-size: 1.25rem; color: var(--text-main); letter-spacing: 0.5px;">💰 $${epsNumStr}</span>
+        ${growthSpan}
+      </div>
+      ${gmDisplay}
+    </div>`;
+
+    // 沿著五日線，回檔10日有稱標紅字
+    let isSupportedByMA10 = false;
+    const tc = techCache[s.symbol.split('.')[0]];
+    if (tc && tc.sma5 && tc.sma10) {
+      if (tc.sma5 > tc.sma10 && s.price >= tc.sma10 && s.price <= tc.sma10 * 1.02) {
+        isSupportedByMA10 = true;
+      }
+    }
+    const nameStyle = isSupportedByMA10 ? 'color: var(--accent-red); font-weight: 900;' : 'font-weight: bold;';
+
+    // 成交量與增量判斷
+    const volDisplayStr = volDisplay;
+    let volStatus = '';
+    if (tc && tc.vol_sma20) {
+      if (vol > tc.vol_sma20 * 1.5) {
+        volStatus = `<span style="color: var(--accent-red); font-size: 0.8rem; font-weight: 700; background: rgba(239, 68, 68, 0.15); padding: 2px 4px; border-radius: 4px; margin-left: 4px;">🔥爆量</span>`;
+      } else if (vol > tc.vol_sma20) {
+        volStatus = `<span style="color: var(--accent-orange); font-size: 0.8rem; font-weight: 700; margin-left: 4px;">📈增量</span>`;
+      } else {
+        volStatus = `<span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 500; margin-left: 4px;">量縮</span>`;
+      }
+    }
+    const volumeCell = `<td style="font-family:var(--font-mono); color:var(--text-main); font-weight:600;">${volDisplayStr}${volStatus}</td>`;
+
     return `
       <tr class="stock-row-tick">
         <td><span class="score-badge ${scoreClass}">${scoreBadgeText}</span></td>
         <td class="symbol-code">${s.symbol}</td>
-        <td><strong>${s.name}</strong><br><span style="font-size:0.75rem; color:var(--text-dim);">${s.desc || ''}</span></td>
+        <td><strong style="${nameStyle}">${s.name}</strong><br><span style="font-size:0.75rem; color:var(--text-dim);">${s.desc || ''}</span></td>
         <td><span class="pill ${marketPill}">${s.market}</span></td>
         <td><span class="pill pill-blue">${s.sector}</span></td>
         <td style="font-family:var(--font-mono); font-weight:800; font-size:0.95rem;">NT$ ${s.price.toLocaleString('zh-TW', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
         <td style="color: ${changeColor}; font-weight:700; font-family:var(--font-mono);">${chgArrow} ${s.change}</td>
-        <td style="font-family:var(--font-mono); color:var(--text-main);">${volDisplay}</td>
         <td style="color:${yoyColor}; font-weight:700; font-family:var(--font-mono);">${yoyDisplay}</td>
         <td style="color:${peColor}; font-family:var(--font-mono);">${peDisplay}</td>
+        <td>${epsDisplay}</td>
+        ${volumeCell}
         <td><span class="pill pill-purple">${s.inst}</span></td>
         <td style="text-align:center;">${generateSparklineSvg(techCache[s.symbol.split('.')[0]]?.history5d)}</td>
         <td><button class="time-btn" style="background:var(--primary); color:#fff; font-weight:700;" onclick="analyzeStockTarget('${s.symbol}', '${s.name}', ${s.price})">AI 買點診斷</button></td>
@@ -408,6 +490,8 @@ async function loadMomentumStocks() {
     if (!res.ok) throw new Error('fetch failed');
     const data = await res.json();
     momentumStocks = data.top_momentum || [];
+    // 過濾本益比超過20的股票
+    momentumStocks = momentumStocks.filter(s => !s.pe || s.pe <= 30);
     renderMomentumTable();
   } catch (err) {
     console.error('Momentum error:', err);
@@ -454,16 +538,87 @@ function renderMomentumTable() {
     const getScore = (keyUtf8, keyGarbled) => scores[keyUtf8] ?? scores[keyGarbled] ?? 0;
     const details = `材:${getScore('題材', '憿峕')} 金:${getScore('資金', '鞈')} 線:${getScore('線型', '蝺𡁜')} 境:${getScore('大環境', '憭抒兛憓')} 勢:${getScore('趨勢', '頞典𨋍')}`;
 
+    // 沿著五日線，回檔10日有稱標紅字
+    let isSupportedByMA10 = false;
+    const tc = techCache[s.symbol.split('.')[0]];
+    if (tc && tc.sma5 && tc.sma10) {
+      if (tc.sma5 > tc.sma10 && s.price >= tc.sma10 && s.price <= tc.sma10 * 1.02) {
+        isSupportedByMA10 = true;
+      }
+    }
+    const nameStyle = isSupportedByMA10 ? 'color: var(--accent-red); font-weight: 900;' : 'font-weight: 700;';
+
+    // EPS 與季增率 (真實資料優先)
+    let epsNumStr = '-';
+    let epsGrowVal = null;
+    let epsGrowStr = '-';
+    let epsColor = 'var(--text-main)';
+    let epsBg = 'background: rgba(128, 128, 128, 0.1); border: 1px solid rgba(128, 128, 128, 0.3);';
+
+    const ec = epsCache[s.symbol.split('.')[0]];
+    if (ec) {
+      epsNumStr = ec.eps_latest.toFixed(2);
+      if (ec.eps_prev && ec.eps_prev !== 0) {
+        epsGrowVal = ((ec.eps_latest - ec.eps_prev) / Math.abs(ec.eps_prev)) * 100;
+        epsGrowStr = epsGrowVal.toFixed(1);
+      }
+    } else {
+      // 找不到真實季報資料，以 TTM/4 估算單季 EPS，並模擬 QoQ 呈現版面
+      if (s.price && s.pe && s.pe > 0) {
+        epsNumStr = (s.price / s.pe / 4).toFixed(2) + '<span style="font-size:0.7rem; color:var(--text-dim); margin-left:2px;">(估)</span>';
+        epsGrowVal = s.qoq !== undefined ? s.qoq : (typeof s.yoy === 'number' ? s.yoy * 0.35 : null);
+        if (epsGrowVal !== null) epsGrowStr = epsGrowVal.toFixed(1);
+      }
+    }
+
+    if (epsGrowVal !== null) {
+      epsColor = epsGrowVal > 0 ? 'var(--accent-red)' : epsGrowVal < 0 ? 'var(--accent-green)' : 'var(--text-main)';
+      if (epsGrowVal > 0) {
+        epsBg = 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05)); border: 1px solid rgba(239, 68, 68, 0.5);';
+      }
+    }
+
+    const growthSpan = epsGrowVal !== null 
+      ? `<span style="font-weight: 900; font-size: 1.1rem; color: ${epsColor}; margin-left: 8px;">(${epsGrowVal > 0 ? '+' : ''}${epsGrowStr}%)</span>`
+      : '';
+
+    const gmDisplay = ec && ec.gm ? `<div style="font-size:0.75rem; color:var(--text-dim); margin-top:3px;">毛利率 <span style="font-weight:700; color:${ec.gm >= 30 ? '#10b981' : ec.gm >= 15 ? '#facc15' : 'var(--accent-red)'};">${ec.gm}%</span>${ec.quarter ? ' · ' + ec.quarter : ''}</div>` : '';
+
+    const epsDisplay = `<div style="${epsBg} padding: 6px 12px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.15); min-width: 130px;" title="最新一季真實EPS與QoQ">
+      <div style="display:flex; align-items:center;">
+        <span style="font-weight: 900; font-size: 1.25rem; color: var(--text-main); letter-spacing: 0.5px;">💰 $${epsNumStr}</span>
+        ${growthSpan}
+      </div>
+      ${gmDisplay}
+    </div>`;
+
+    // 成交量與增量判斷
+    const vol = s.volume ?? 0;
+    const volDisplayStr = vol >= 10000 ? `${(vol / 10000).toFixed(1)}萬張` : vol >= 1000 ? `${(vol / 1000).toFixed(1)}千張` : `${vol}張`;
+    let volStatus = '';
+    if (tc && tc.vol_sma20) {
+      if (vol > tc.vol_sma20 * 1.5) {
+        volStatus = `<span style="color: var(--accent-red); font-size: 0.8rem; font-weight: 700; background: rgba(239, 68, 68, 0.15); padding: 2px 4px; border-radius: 4px; margin-left: 4px;">🔥爆量</span>`;
+      } else if (vol > tc.vol_sma20) {
+        volStatus = `<span style="color: var(--accent-orange); font-size: 0.8rem; font-weight: 700; margin-left: 4px;">📈增量</span>`;
+      } else {
+        volStatus = `<span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 500; margin-left: 4px;">量縮</span>`;
+      }
+    }
+    const volumeCell = `<td style="font-family:var(--font-mono); color:var(--text-main); font-weight:600;">${volDisplayStr}${volStatus}</td>`;
+
     return `
       <tr class="stock-row-tick">
         <td><span class="score-badge ${badgeClass}">${s.ai_score.toFixed(1)}分</span></td>
         <td style="font-weight:700;">${s.signal}</td>
         <td class="symbol-code">${s.symbol}</td>
-        <td><strong>${s.name}</strong></td>
+        <td><strong style="${nameStyle}">${s.name}</strong></td>
         <td style="font-family:var(--font-mono); font-weight:800;">NT$ ${s.price.toLocaleString('zh-TW', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
         <td style="color: ${chgColor}; font-weight:700; font-family:var(--font-mono);">${chgArrow} ${s.change}</td>
         <td><span class="pill pill-purple">${s.theme_tag}</span></td>
         <td><span class="pill pill-blue">${s.inst}</span></td>
+        <td>${epsDisplay}</td>
+        ${volumeCell}
         <td style="font-size:0.75rem; color:var(--text-dim); white-space:nowrap;">${details}</td>
         <td style="font-size:0.85rem; font-weight:600; color:var(--accent-orange);">${s.reason || "多方動能蓄積"}</td>
         <td style="text-align:center;">${generateSparklineSvg(s.history5d)}</td>

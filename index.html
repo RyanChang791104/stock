@@ -49,11 +49,8 @@
       </div>
 
       <nav class="nav-links">
-        <button class="nav-tab active" data-tab="screener">🔥 全台股實時篩選引擎 (8,200+)</button>
+        <button class="nav-tab" data-tab="screener">🔥 全台股實時篩選引擎 (8,200+)</button>
         <button class="nav-tab" data-tab="ai-momentum">🤖 AI 六維飆股漏斗 (即時)</button>
-        <button class="nav-tab" data-tab="overview">2026 大盤行情</button>
-        <button class="nav-tab" data-tab="tsmc-deepdive">台積電 Q2 財報</button>
-        <button class="nav-tab" data-tab="stock-strategy">選股法則與指標</button>
         <button class="nav-tab" data-tab="ai-analyst">AI 股市智庫 (Qwen 2.5)</button>
       </nav>
 
@@ -152,6 +149,8 @@
                 <th class="sortable" data-key="changePct">今日漲跌 <span class="sort-arrow">⇅</span></th>
                 <th class="sortable" data-key="yoy">營收年增 (YoY) <span class="sort-arrow">⇅</span></th>
                 <th class="sortable" data-key="pe">本益比 <span class="sort-arrow">⇅</span></th>
+                <th>近季EPS與季增率(QoQ)</th>
+                <th>成交量與動能</th>
                 <th>法人籌碼狀態</th>
                 <th>5日趨勢</th>
                 <th>AI 買點診斷</th>
@@ -205,6 +204,8 @@
                   <th>漲跌</th>
                   <th>AI 捕捉題材</th>
                   <th>法人動向</th>
+                  <th>近季EPS與季增率(QoQ)</th>
+                  <th>成交量與動能</th>
                   <th>五大核心明細</th>
                   <th>強勢理由 / 主打題材</th>
                   <th>5日趨勢</th>
@@ -218,152 +219,6 @@
         </div>
       </section>
 
-      <!-- 分頁 2: 大盤總覽 -->
-      <section class="tab-pane" id="overview">
-        <div class="hero-stats-grid">
-          <div class="stat-card">
-            <div class="card-head">
-              <span class="card-label">加權指數 (TAIEX 2026)</span>
-              <span class="pill pill-purple">歷史高檔區</span>
-            </div>
-            <div class="card-number">42,671.27</div>
-            <div class="card-foot">單日成交金額: 6,820 億新台幣</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="card-head">
-              <span class="card-label">台積電 (2330) 股價</span>
-              <span class="pill pill-green">估值 US$ 1.83 兆</span>
-            </div>
-            <div class="card-number">NT$ 2,290.00</div>
-            <div class="card-foot">佔加權指數權重約 36.8%</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="card-head">
-              <span class="card-label">台積電 Q2 營收</span>
-              <span class="pill pill-green">年增 +33.7%</span>
-            </div>
-            <div class="card-number">US$ 40.20 B</div>
-            <div class="card-foot">單季毛利率強勢達 67.7%</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="card-head">
-              <span class="card-label">全台股標的總數</span>
-              <span class="pill pill-blue">8,200+ 標的</span>
-            </div>
-            <div class="card-number">8,200 檔標的</div>
-            <div class="card-foot">含 上市 / 上櫃 / 興櫃 / ETF / 權證</div>
-          </div>
-        </div>
-
-        <div class="chart-layout-grid">
-          <div class="chart-box main-chart-box">
-            <div class="chart-header">
-              <h3>2026 年加權指數歷史走勢對比圖</h3>
-            </div>
-            <div class="canvas-container">
-              <canvas id="taiexChart"></canvas>
-            </div>
-          </div>
-
-          <div class="info-box">
-            <h3>2026 台股產業權重分配</h3>
-            <div class="sector-list">
-              <div class="sector-item">
-                <div class="sector-meta">
-                  <span>晶圓代工與IC設計 (TSMC/聯發科)</span>
-                  <span>45.6%</span>
-                </div>
-                <div class="bar-bg"><div class="bar-fill" style="width: 45.6%; background: #6366F1;"></div></div>
-              </div>
-              <div class="sector-item">
-                <div class="sector-meta">
-                  <span>AI伺服器機櫃與水冷散熱 (鴻海/廣達/奇鋐)</span>
-                  <span>24.2%</span>
-                </div>
-                <div class="bar-bg"><div class="bar-fill" style="width: 24.2%; background: #38BDF8;"></div></div>
-              </div>
-              <div class="sector-item">
-                <div class="sector-meta">
-                  <span>金融金控 (富邦金/國泰金)</span>
-                  <span>10.8%</span>
-                </div>
-                <div class="bar-bg"><div class="bar-fill" style="width: 10.8%; background: #10B981;"></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 分頁 3: 台積電 Q2 財報 -->
-      <section class="tab-pane" id="tsmc-deepdive">
-        <div class="tsmc-header-card">
-          <div class="tsmc-main-info">
-            <div class="tsmc-ticker-badge">2330.TW / TSM (2026 最新財報)</div>
-            <h2>台灣積體電路製造股份有限公司 (TSMC)</h2>
-            <p>全球晶圓代工霸主，2026年第二季創下單季營收 402 億美元紀錄，全球首度商用量產 2奈米 (N2) 製程技術。</p>
-          </div>
-          <div class="tsmc-price-tag">
-            <div class="price-val">NT$ 2,290.00</div>
-            <div class="price-change">市值估估: US$ 1.83 兆 (全球第 6 大)</div>
-          </div>
-        </div>
-
-        <div class="metrics-row">
-          <div class="metric-card">
-            <span class="m-label">Q2 2026 營收 (Net Revenue)</span>
-            <span class="m-val">US$ 40.20 B</span>
-            <span class="m-sub">年增 +33.7% / 季增 +12.0%</span>
-          </div>
-          <div class="metric-card">
-            <span class="m-label">毛利率 (Gross Margin)</span>
-            <span class="m-val">67.7%</span>
-            <span class="m-sub">超越財測高標 65%</span>
-          </div>
-          <div class="metric-card">
-            <span class="m-label">先進製程營收占比 (<=7nm)</span>
-            <span class="m-val">77% 營收</span>
-            <span class="m-sub">歷史新高紀錄</span>
-          </div>
-          <div class="metric-card">
-            <span class="m-label">2奈米 (N2) 營收貢獻</span>
-            <span class="m-val">3% 營收</span>
-            <span class="m-sub">2026 Q2 首度放量</span>
-          </div>
-        </div>
-
-        <div class="tsmc-details-grid">
-          <div class="detail-card">
-            <h3>TSMC Q2 2026 各先進製程營收比重 (N2 / N3 / N5 / N7)</h3>
-            <div class="canvas-container-sm">
-              <canvas id="nodeRevenueChart"></canvas>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 分頁 4: 選股法則 -->
-      <section class="tab-pane" id="stock-strategy">
-        <div class="strategy-header">
-          <h2>台股精準選股法則 — 如何挑選翻倍潛力飆股？</h2>
-          <p>結合【籌碼面】、【基本面】與【技術面】三大維度，嚴格篩選台股中最具爆發力的強勢飆股。</p>
-        </div>
-
-        <div class="rules-grid">
-          <div class="rule-card">
-            <div class="rule-num">法則 1</div>
-            <h3>三大法人籌碼面：投信與外資連續買超</h3>
-            <p class="rule-desc">投信連續買超 ≥ 3 天代表內資鎖碼，外資同步加碼代表國際資金流入。</p>
-          </div>
-          <div class="rule-card">
-            <div class="rule-num">法則 2</div>
-            <h3>基本面營收強勁：月營收「雙增」與創歷史新高</h3>
-            <p class="rule-desc">月增 (MoM) > 10% & 年增 (YoY) > 20%，帶動單月營收創歷史新高。</p>
-          </div>
-        </div>
-      </section>
 
       <!-- 分頁 5: LOCAL AI MARKET ANALYST -->
       <section class="tab-pane" id="ai-analyst">
