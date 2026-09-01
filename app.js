@@ -21,10 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initAIAnalyst();
   initSortHeaders();
   initMomentumControls();
+  initSurgeAlertPanel();
   loadFullStockDatabase();
   loadMomentumStocks();
-  setInterval(loadMomentumStocks, 10000); // 10秒更新一次 AI 飆股
-  setInterval(loadFullStockDatabase, 15000); // 定期更新大盤
+  setInterval(loadMomentumStocks, 10000);
+  setInterval(loadFullStockDatabase, 15000);
+  setInterval(pollSurgeAlerts, 1000);  // 每 1 秒輪詢即時警報 (真實即時)
 });
 
 /* ── 排序表頭初始化 ── */
@@ -79,6 +81,197 @@ function sortAndRender() {
 function parseChangePct(str) {
   if (!str) return 0;
   return parseFloat(str.replace('%', '').replace('+', '')) || 0;
+}
+
+/* ── 即時飆升警報系統 ── */
+let surgeAlertSeenTs = new Set();
+let surgeAlertVisible = false;
+
+function initSurgeAlertPanel() {
+  // 建立浮動警報面板
+  const panel = document.createElement('div');
+  panel.id = 'surge-alert-panel';
+  panel.style.cssText = `
+    position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+    width: 740px; max-height: 560px; overflow-y: auto;
+    background: rgba(15,15,30,0.97);
+    border: 1px solid rgba(239,68,68,0.5);
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(239,68,68,0.25);
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    font-family: 'Inter', sans-serif;
+  `;
+  panel.innerHTML = `
+    <div style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; background:rgba(15,15,30,0.99); z-index:2;">
+      <span style="font-weight:800; color:#f87171; font-size:0.95rem;">⚡ 即時飆升警報</span>
+      <span id="surge-alert-count" style="background:#ef4444; color:#fff; font-size:0.72rem; font-weight:700; padding:2px 8px; border-radius:10px;">0</span>
+    </div>
+    <div id="surge-alert-list" style="padding:10px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:start;"></div>
+  `;
+  document.body.appendChild(panel);
+
+  // 建立浮動警報按鈕
+  const btn = document.createElement('button');
+  btn.id = 'surge-alert-btn';
+  btn.style.cssText = `
+    position: fixed; bottom: 24px; right: 24px; z-index: 10000;
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: #fff; border: none; border-radius: 50px;
+    padding: 12px 20px; font-weight: 800; font-size: 0.9rem;
+    cursor: pointer; box-shadow: 0 4px 20px rgba(239,68,68,0.5);
+    display: flex; align-items: center; gap: 8px;
+    transition: all 0.2s ease;
+  `;
+  btn.innerHTML = '⚡ 飆升警報 <span id="surge-btn-count" style="background:rgba(255,255,255,0.25); padding:1px 8px; border-radius:10px;">0</span>';
+  btn.addEventListener('click', () => {
+    surgeAlertVisible = !surgeAlertVisible;
+    panel.style.display = surgeAlertVisible ? 'flex' : 'none';
+    btn.style.bottom = surgeAlertVisible ? '590px' : '24px';
+  });
+  document.body.appendChild(btn);
+}
+
+function flashAlertBtn() {
+  const btn = document.getElementById('surge-alert-btn');
+  if (!btn) return;
+  btn.style.transform = 'scale(1.15)';
+  btn.style.boxShadow = '0 0 0 8px rgba(239,68,68,0.3)';
+  setTimeout(() => {
+    btn.style.transform = 'scale(1.0)';
+    btn.style.boxShadow = '0 4px 20px rgba(239,68,68,0.5)';
+  }, 400);
+}
+
+async function pollSurgeAlerts() {
+  // 無時間限制 — 後端 surge_alert.py 控制何時產生警報；UI 只負責顯示
+  try {
+    const res = await fetch('surge_alerts.json?t=' + Date.now());
+    if (!res.ok) return;
+    const alerts = await res.json();
+
+    const list     = document.getElementById('surge-alert-list');
+    const countEl  = document.getElementById('surge-alert-count');
+    const btnCount = document.getElementById('surge-btn-count');
+    if (!list) return;
+
+    // 偵測新警報 (用來閃爍按鈕 & 自動展開面板)
+    const newAlerts = alerts.filter(a => !surgeAlertSeenTs.has(a.ts));
+    if (newAlerts.length > 0) {
+      newAlerts.forEach(a => surgeAlertSeenTs.add(a.ts));
+      flashAlertBtn();
+      // 自動展開面板
+      const panel = document.getElementById('surge-alert-panel');
+      if (panel && !surgeAlertVisible) {
+        surgeAlertVisible = true;
+        panel.style.display = 'flex';
+        const btn = document.getElementById('surge-alert-btn');
+        if (btn) btn.style.bottom = '590px';
+      }
+    }
+
+    // ── 推薦排序: AI綜合分×2 + 突破分 + 漲幅×3 → 最強放最上面 ──
+    const sorted = [...alerts].sort((a, b) => {
+      const pa = (a.ai_score||0)*2 + (a.breakout_score||0) + (a.change_pct||0)*3;
+      const pb = (b.ai_score||0)*2 + (b.breakout_score||0) + (b.change_pct||0)*3;
+      return pb - pa;
+    }).slice(0, 30);
+
+    // ── 展開完整卡片渲染 ──
+    list.innerHTML = sorted.map(a => {
+      const pct = a.change_pct || 0;
+      let bg, border, icon;
+      if (pct >= 9.5)    { bg='rgba(239,68,68,0.2)';   border='#ef4444'; icon='🚨'; }
+      else if (pct >= 7) { bg='rgba(245,158,11,0.2)';  border='#f59e0b'; icon='🔥'; }
+      else if (pct >= 5) { bg='rgba(99,102,241,0.2)';  border='#6366f1'; icon='⚡'; }
+      else               { bg='rgba(16,185,129,0.15)'; border='#10b981'; icon='📈'; }
+
+      const vol = a.volume
+        ? (a.volume >= 10000 ? `${(a.volume/10000).toFixed(1)}萬張` : `${a.volume.toLocaleString()}張`)
+        : '-';
+
+      // 標籤列
+      const aiTag   = a.is_momentum ? '<span style="background:#6366f1;color:#fff;font-size:0.65rem;padding:1px 6px;border-radius:5px;font-weight:700;">🤖AI飆股</span>' : '';
+      const highTag = a.is_new_high  ? '<span style="background:#f59e0b;color:#000;font-size:0.65rem;padding:1px 6px;border-radius:5px;font-weight:700;">🏆新高</span>' : '';
+      const bpTags  = (a.breakout_flags||[]).map(f =>
+        `<span style="background:rgba(99,102,241,0.25);color:#a5b4fc;font-size:0.62rem;padding:1px 5px;border-radius:4px;">${f}</span>`
+      ).join('');
+      const themeBadge = a.theme_tag
+        ? `<span style="background:rgba(16,185,129,0.2);color:#6ee7b7;font-size:0.62rem;padding:1px 6px;border-radius:4px;">${a.theme_tag}</span>` : '';
+
+      // AI 分數行
+      const aiScoreHtml = a.ai_score
+        ? `<span style="color:#64748b;">AI:</span> <strong style="color:#f87171;">${a.ai_score.toFixed(1)}</strong>` : '';
+      const bkScoreHtml = a.breakout_score
+        ? `<span style="color:#64748b;margin-left:8px;">突破:</span> <strong style="color:#c084fc;">${a.breakout_score.toFixed(0)}</strong>` : '';
+      const signalHtml  = a.signal
+        ? `<span style="color:#fbbf24;margin-left:8px;">${a.signal}</span>` : '';
+
+      // 5大因子分數條
+      const factors = [
+        { label:'題材',  val: a.score_theme   ||0, color:'#f87171' },
+        { label:'資金',  val: a.score_capital  ||0, color:'#fb923c' },
+        { label:'線型',  val: a.score_tech     ||0, color:'#a78bfa' },
+        { label:'大環境',val: a.score_macro    ||0, color:'#38bdf8' },
+        { label:'趨勢',  val: a.score_trend    ||0, color:'#34d399' },
+      ];
+      const hasBars = factors.some(f => f.val > 0);
+      const scoreBars = hasBars ? factors.map(f => `
+        <div style="display:flex;align-items:center;gap:4px;">
+          <span style="font-size:0.62rem;color:#64748b;width:32px;flex-shrink:0;">${f.label}</span>
+          <div style="flex:1;background:rgba(255,255,255,0.07);border-radius:3px;height:5px;">
+            <div style="width:${Math.min(f.val,100)}%;background:${f.color};height:5px;border-radius:3px;"></div>
+          </div>
+          <span style="font-size:0.62rem;color:#94a3b8;width:22px;text-align:right;">${f.val}</span>
+        </div>`).join('') : '';
+
+      const instRow  = (a.inst && a.inst !== '-') ? `<span>🏦 ${a.inst}</span>` : '';
+      const whaleRow = a.whale_pct ? `<span>🐋 大戶 ${(+a.whale_pct).toFixed(1)}%</span>` : '';
+      const reasonRow = a.reason
+        ? `<div style="font-size:0.71rem;color:#94a3b8;margin-top:6px;padding-top:5px;border-top:1px solid rgba(255,255,255,0.06);line-height:1.5;">💡 ${a.reason}</div>` : '';
+
+      return `
+      <div style="background:${bg};border:1px solid ${border};border-radius:12px;padding:12px;margin:0;height:100%;display:flex;flex-direction:column;">
+
+        <!-- 名稱 + 漲幅 -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+          <div>
+            <span style="font-weight:800;color:#f1f5f9;font-size:0.95rem;">${icon} ${a.name}</span>
+            <span style="color:#64748b;font-size:0.78rem;margin-left:4px;">(${a.code})</span>
+            <div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:3px;">${aiTag}${highTag}${bpTags}${themeBadge}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;margin-left:8px;">
+            <div style="font-weight:900;color:#f87171;font-size:1.2rem;">${pct>0?'+':''}${pct.toFixed(2)}%</div>
+            <div style="font-size:0.7rem;color:#94a3b8;">${a.label}</div>
+          </div>
+        </div>
+
+        <!-- 基本資訊 -->
+        <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:0.74rem;color:#94a3b8;margin-bottom:6px;">
+          <span>💰 NT$<strong style="color:#e2e8f0;">${a.price}</strong></span>
+          <span>📊 ${vol}</span>
+          <span>🏭 ${a.sector||'-'}</span>
+          <span>🕐 ${a.ts?a.ts.substring(11,19):''}</span>
+          ${instRow}${whaleRow}
+        </div>
+
+        <!-- AI 分數 -->
+        ${(aiScoreHtml||bkScoreHtml) ? `<div style="display:flex;align-items:center;flex-wrap:wrap;margin-bottom:6px;font-size:0.75rem;">${aiScoreHtml}${bkScoreHtml}${signalHtml}</div>` : ''}
+
+        <!-- 5大因子分數條 -->
+        ${hasBars ? `<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:4px;">${scoreBars}</div>` : ''}
+
+        <!-- 選股原因 -->
+        ${reasonRow}
+      </div>`;
+    }).join('');
+
+    const total = surgeAlertSeenTs.size;
+    if (countEl) countEl.textContent = total;
+    if (btnCount) btnCount.textContent = total;
+
+  } catch (e) { /* surge_alerts.json 尚未建立時靜默忽略 */ }
 }
 
 function generateSparklineSvg(history) {

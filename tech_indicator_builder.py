@@ -228,6 +228,20 @@ def calc_all_indicators(closes, volumes, highs, lows):
         if p_sma5 <= p_sma20 and sma5 > sma20:
             sma5_20_golden_cross = True
             
+    # ── 新高突破偵測 (飆股核心信號) ──
+    high_20d = max(highs[-20:]) if len(highs) >= 20 else max(highs)
+    high_60d = max(highs[-60:]) if len(highs) >= 60 else max(highs)
+    low_20d  = min(lows[-20:])  if len(lows)  >= 20 else min(lows)
+
+    latest_close = closes[-1]
+    # 當日收盤突破 20 日最高價 = 強力突破訊號
+    new_high_20d = latest_close >= high_20d * 0.995
+    new_high_60d = latest_close >= high_60d * 0.995
+
+    # 整理期緊縮度: 20日高低振幅 / 中價 (越小=箱型越窄=蓄勢)
+    mid_20d = (high_20d + low_20d) / 2 if (high_20d + low_20d) > 0 else 1
+    range_pct_20d = (high_20d - low_20d) / mid_20d if mid_20d > 0 else 1.0
+
     return {
         "sma5": round(sma5, 2),
         "sma10": round(sma10, 2),
@@ -244,7 +258,13 @@ def calc_all_indicators(closes, volumes, highs, lows):
         "kd_golden_cross": kd_golden_cross,
         "macd_golden_cross": macd_golden_cross,
         "golden_cross_5_20": sma5_20_golden_cross,
-        "latest_close": closes[-1],
+        "latest_close": round(latest_close, 2),
+        "high_20d": round(high_20d, 2),
+        "high_60d": round(high_60d, 2),
+        "low_20d":  round(low_20d, 2),
+        "new_high_20d": new_high_20d,
+        "new_high_60d": new_high_60d,
+        "range_pct_20d": round(range_pct_20d, 4),
         "history5d": [round(c, 2) for c in closes[-5:]] if len(closes) >= 5 else [round(c, 2) for c in closes]
     }
 

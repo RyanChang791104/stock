@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-AI 超強飆股多因子評分引擎 (2026年量化升級版 - RSI/KD/MACD/ATR)
-結合: 法人動向 + 技術線型 + 題材熱度 + 成交量能 + 股價動能 + 集保大戶籌碼
-每 30 秒掃描全台股 6,000+ 標的，讀取 tech_cache.json 並輸出 momentum-stocks.json
+AI 超強飆股多因子評分引擎 (2026年量化升級版 - RSI/KD/MACD/ATR + 突破型態 + 動態權重)
+結合: 法人動向 + 技術線型 + 題材熱度 + 成交量能 + 股價動能 + 集保大戶籌碼 + 日權自我校正
+每 30 秒揃描全台股 6,000+ 標的，讀取 tech_cache.json 並輸出 momentum-stocks.json
 """
 
 import json
@@ -12,8 +12,30 @@ import time
 import math
 import re
 
-INPUT_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stocks-full-8000.json")
-OUTPUT_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "momentum-stocks.json")
+BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
+INPUT_FILE  = os.path.join(BASE_DIR, "stocks-full-8000.json")
+OUTPUT_FILE = os.path.join(BASE_DIR, "momentum-stocks.json")
+WEIGHT_FILE = os.path.join(BASE_DIR, "weight_override.json")
+
+# 預設權重 (由 pattern_corrector.py 每日自動調整)
+DEFAULT_WEIGHTS = {
+    "theme":   0.20,
+    "capital": 0.25,
+    "tech":    0.25,
+    "macro":   0.15,
+    "trend":   0.15,
+}
+
+def load_dynamic_weights():
+    """讀取由每日校正系統更新的動態權重，若不存在則用預設值"""
+    try:
+        with open(WEIGHT_FILE, encoding="utf-8") as f:
+            w = json.load(f)
+        for k in DEFAULT_WEIGHTS:
+            w.setdefault(k, DEFAULT_WEIGHTS[k])
+        return w
+    except Exception:
+        return DEFAULT_WEIGHTS.copy()
 
 # ── 題材熱度關鍵字庫 ── (2026年7月最新 - 結合網路最新趨勢)
 THEME_KEYWORDS = {
@@ -52,6 +74,25 @@ THEME_KEYWORDS = {
     # 光電通訊 (75分)
     "光收發|光纖|WDM|帶狀光纖|FA": 76,
 }
+
+# ── TWSE 產業別數字代碼對照表 ──
+TWSE_SECTOR_MAP = {
+    "1": "水泥", "2": "食品", "3": "塑膠", "4": "紡織纖維",
+    "5": "電機機械", "6": "電器電纜", "8": "玻璃陶瓷",
+    "9": "造紙", "10": "鋼鐵", "11": "橡膠", "12": "汽車",
+    "13": "電子工業", "14": "建材營造", "15": "航運",
+    "16": "觀光餐旅", "17": "金融保險", "18": "貿易百貨",
+    "19": "綜合", "20": "其他", "21": "化學工業",
+    "22": "生技醫療", "23": "油電燃氣", "24": "半導體",
+    "25": "電腦週邊", "26": "光電", "27": "通信網路",
+    "28": "電子零組件", "29": "電子通路", "30": "資訊服務",
+    "31": "其他電子"
+}
+
+def resolve_sector(sector_str):
+    """將 TWSE 數字產業代碼解析為中文名稱"""
+    s = str(sector_str).strip()
+    return TWSE_SECTOR_MAP.get(s, s)
 
 # ── 法人動向關鍵字評分 ──
 INST_SCORES = {
@@ -96,7 +137,7 @@ def score_theme(desc_str, sector_str):
     return best
 
 def score_technical_quant(change_pct, price, t_data):
-    """均線 + 布林通道 + RSI + KD + MACD 綜合量化技術指標評分"""
+    """均線 + 布林通道 + RSI + KD + MACD + 漲幅動能 綜合量化技術指標評分"""
     if not t_data:
         # Fallback 舊的日漲跌幅評分
         if change_pct >= 8:     base = 90
@@ -126,71 +167,89 @@ def score_technical_quant(change_pct, price, t_data):
     sma_gc = t_data.get("golden_cross_5_20", False)
     
     score = 50.0  # 基礎分
-    
+
+    # 0. 價格動能突破加分 (飆股核心信號)
+    if change_pct >= 9.5:   score += 28  # 漲停/接近漲停
+    elif change_pct >= 7:   score += 22  # 強勢急漲
+    elif change_pct >= 5:   score += 15  # 明顯突破
+    elif change_pct >= 3:   score += 8   # 溫和上漲
+    elif change_pct >= 1:   score += 3
+    elif change_pct < -5:   score -= 15  # 大跌懲罰
+    elif change_pct < -2:   score -= 7
+
     # 1. 均線排列與黃金交叉
     if price > sma5 > sma10 > sma20:
         score += 12
     if sma_gc:
         score += 10
-        
-    # 2. 布林通道緊縮後向上突破
+
+    # 2. 布林通道 — 窄幅緊縮後突破 OR 帶量強攻上軌
     if band_width < 0.12 and price >= upper_band * 0.99:
-        score += 20
-        
-    # 3. RSI 動能指標
+        score += 20  # 窄幅蓄積後爆發
+    elif upper_band > 0 and price >= upper_band and change_pct >= 3:
+        score += 12  # 帶量突破布林上軌
+
+    # 3. RSI 動能指標 (細化梯度)
     if 50.0 <= rsi <= 70.0:
         score += 15  # 強勢多頭段
+    elif 70.0 < rsi < 80.0:
+        score += 8   # 強勢偏熱但未到頂，仍可追
     elif rsi >= 80.0:
-        score -= 25  # 極度超買，高檔阻力大，防追高
+        score -= 18  # 極度超買，降低懲罰避免錯殺強勢股
     elif rsi < 35.0:
         score -= 15  # 極度弱勢
-        
+
     # 4. KD 隨機指標黃金交叉
     if kd_gc:
         if k <= 35.0:
             score += 25  # 低檔黃金交叉，極強轉折買訊
         else:
             score += 10  # 中檔強勢黃金交叉
-            
+
     # 5. MACD 趨勢指標
     if macd_gc:
         score += 15  # 柱狀圖翻紅，趨勢翻多買點
     elif macd_hist > 0:
         score += 8   # 多頭趨勢持續
-        
+
     # 6. 回測月線支撐
     bias = (price - sma20) / sma20 if sma20 > 0 else 0
     if -0.02 <= bias <= 0.03:
         score += 10
-        
+
     # 7. 極大乖離懲罰
-    if bias > 0.25:
-        score -= 20
-        
-    # 微調
-    score += change_pct * 0.3
-    
+    if bias > 0.30:
+        score -= 18
+
+    # 8. 強勢突破確認：大漲 + RSI 健康區間
+    if change_pct >= 5 and 50 <= rsi <= 82:
+        score += 10
+
     return min(100.0, max(10.0, score))
 
 def score_capital_quant(inst_str, volume, market_avg_vol, whale_pct, retail_exiting, t_data):
     """資金籌碼評分: 結合量能爆發比例、大戶吸籌、投信外資動向"""
     inst_s = score_institutional(inst_str)
     
-    # 計算量能爆量比率 (以個股自體 SMA20 均量為對照基準，最為精準)
+    # 計算量能爆量比率 (展開單位修正: stocks JSON 的 volume 單位是 張 (1000股/張);
+    # Yahoo Finance vol_sma20 單位是股→需乘以 1000 做單位對齊)
     vol_s = 50.0
     if t_data and t_data.get("vol_sma20", 0) > 0:
         vol_sma20 = t_data["vol_sma20"]
-        ratio = volume / vol_sma20
-        if ratio >= 2.0:
+        vol_shares = volume * 1000  # 張 → 股 (修正單位不符)
+        ratio = vol_shares / vol_sma20
+        if ratio >= 3.0:
             vol_s = 98.0
-        elif ratio >= 1.5:
+        elif ratio >= 2.0:
             vol_s = 88.0
+        elif ratio >= 1.5:
+            vol_s = 78.0
         elif ratio >= 1.0:
-            vol_s = 75.0
+            vol_s = 65.0
         elif ratio >= 0.5:
-            vol_s = 55.0
+            vol_s = 50.0
         else:
-            vol_s = 40.0
+            vol_s = 35.0
     else:
         # Fallback 到大盤平均成交量
         if volume <= 0:
@@ -218,16 +277,94 @@ def score_capital_quant(inst_str, volume, market_avg_vol, whale_pct, retail_exit
     # 資金 = 35% 法人 + 30% 爆量比率 + 35% 大戶集保鎖碼度
     return (inst_s * 0.35) + (vol_s * 0.30) + (whale_s * 0.35)
 
+def score_breakout_pattern(price, change_pct, t_data, volume):
+    """
+    突破型態評分 — 專門識別飆股級潛力股的核心信號
+    涵蓋: VCP笹型突破 / 新高突破 / 量能爆發 / 相對強度
+    """
+    if not t_data:
+        # 無技術資料時仅依漲幅判斷
+        if change_pct >= 9: return 88.0
+        elif change_pct >= 7: return 80.0
+        elif change_pct >= 5: return 70.0
+        elif change_pct >= 3: return 60.0
+        else: return 50.0
+
+    score = 50.0
+    history5d   = t_data.get("history5d", [])
+    vol_sma20   = t_data.get("vol_sma20", 0)
+    sma20       = t_data.get("sma20", 0)
+    upper_band  = t_data.get("upper_band", 0)
+    rsi         = t_data.get("rsi", 50)
+    high_20d    = t_data.get("high_20d", 0)
+    high_60d    = t_data.get("high_60d", 0)
+    new_high_20d = t_data.get("new_high_20d", False)
+    new_high_60d = t_data.get("new_high_60d", False)
+    range_pct_20d = t_data.get("range_pct_20d", 1.0)  # 20日震幅百分比
+
+    # 1. 創新高突破 (最強飆股信號)
+    if new_high_60d:
+        score += 30  # 創 60 日新高→中期波段展開信號
+    elif new_high_20d:
+        score += 20  # 創 20 日新高→近期突破
+    elif history5d and len(history5d) >= 2:
+        prev_high = max(history5d[:-1])
+        if price > prev_high * 1.01:
+            score += 12  # 突破近 5 日前高
+
+    # 2. 量能爆發確認突破 (修正單位: volume 張 → shares)
+    if vol_sma20 > 0 and volume > 0:
+        vol_ratio = (volume * 1000) / vol_sma20
+        if vol_ratio >= 3.0:
+            score += 28  # 暴量突破→主力攻勢鞍定
+        elif vol_ratio >= 2.0:
+            score += 20  # 大量突破
+        elif vol_ratio >= 1.5:
+            score += 12  # 放量突破
+        elif vol_ratio >= 1.0:
+            score += 5
+        elif vol_ratio < 0.5:
+            score -= 12  # 縮量弱勢，價跌風險高
+
+    # 3. VCP 笹型 (整理期震幅累縮 + 今日放量大漲)
+    if range_pct_20d < 0.12 and change_pct >= 3:
+        score += 22  # 極緊等後爆發 = VCP 最佳樣本
+    elif range_pct_20d < 0.20 and change_pct >= 2:
+        score += 12
+
+    # 4. 布林上軌突破
+    if upper_band > 0 and price >= upper_band * 0.99 and change_pct >= 2:
+        score += 10
+
+    # 5. 月線上方適度乖離 (健康突破區)
+    if sma20 > 0:
+        bias = (price - sma20) / sma20
+        if 0.01 <= bias <= 0.15:
+            score += 10
+        elif bias > 0.25:
+            score -= 8  # 乖離過大少追
+
+    # 6. RSI 進入動能區
+    if 52 <= rsi <= 78:
+        score += 8
+    elif rsi > 78:
+        score += 3
+
+    return min(100.0, max(10.0, score))
+
 def score_macro(sector, change_pct):
-    """大環境/板塊分析"""
-    if "半導體" in sector or "電腦" in sector or "電子" in sector:
-        base = 80
-    elif "電機" in sector or "電纜" in sector or "綠能" in sector:
+    """大環境/板塊分析 (支援 TWSE 數字代碼自動解析)"""
+    sector = resolve_sector(sector)  # 數字代碼 → 中文產業別
+    if any(k in sector for k in ["半導體", "電腦", "電子", "光電", "通信", "資訊"]):
+        base = 82
+    elif any(k in sector for k in ["電機", "電纜", "綠能", "電器"]):
         base = 78
-    elif "金融" in sector or "保險" in sector or "銀行" in sector:
+    elif any(k in sector for k in ["金融", "保險", "銀行", "證券"]):
         base = 72
-    elif "生技" in sector or "醫療" in sector:
+    elif any(k in sector for k in ["生技", "醫療", "化學"]):
         base = 70
+    elif any(k in sector for k in ["航運", "鋼鐵", "橡膠"]):
+        base = 65
     else:
         base = 60
         
@@ -259,20 +396,17 @@ def score_trend(yoy, pe):
     
     return (fund_s * 0.7) + (val_s * 0.3)
 
-def compute_composite_score(theme_s, capital_s, tech_s, macro_s, trend_s):
-    """最終飆股綜合評分 (0-100) — 依題材、資金、線型、大環境、趨勢加權"""
-    weights = {
-        "theme":   0.25,  # 題材
-        "capital": 0.25,  # 資金
-        "tech":    0.20,  # 線型
-        "macro":   0.15,  # 大環境
-        "trend":   0.15,  # 趨勢
-    }
-    score = (theme_s * weights["theme"] +
-             capital_s * weights["capital"] +
-             tech_s * weights["tech"] +
-             macro_s * weights["macro"] +
-             trend_s * weights["trend"])
+def compute_composite_score(theme_s, capital_s, tech_s, macro_s, trend_s, breakout_s, weights):
+    """最終飆股綜合評分 (0-100) — 使用由每日校正系統動態調整的權重"""
+    # 突破得分與技術得分取最大値（兩者疫补，避免重複惲罰）
+    tech_combined = max(tech_s, breakout_s)
+    score = (
+        theme_s   * weights.get("theme",   0.20) +
+        capital_s * weights.get("capital", 0.25) +
+        tech_combined * weights.get("tech",  0.25) +
+        macro_s   * weights.get("macro",   0.15) +
+        trend_s   * weights.get("trend",   0.15)
+    )
     return round(score, 1)
 
 def generate_bull_reason(scores, inst_str, theme_tag, yoy, change_pct, whale_pct, retail_exiting, tech_flags, t_data, volume, price):
@@ -376,6 +510,8 @@ def get_theme_tag(desc, sector):
     return sector or "其他"
 
 def run_momentum_scan():
+    # 讀取每日校正系統產生的動態權重
+    dyn_weights = load_dynamic_weights()
     try:
         with open(INPUT_FILE, encoding="utf-8") as f:
             stocks = json.load(f)
@@ -470,22 +606,24 @@ def run_momentum_scan():
             if est_vol > 5000 and change_pct > 2:
                 tech_flags.append("盤中點火")
 
-        # 5大維度量化評分
-        theme_s   = score_theme(desc, sector)
-        capital_s = score_capital_quant(inst_str, vol, market_avg_vol, whale_pct, retail_exiting, t_data)
-        
+        # 6 大維度量化評分
+        theme_s    = score_theme(desc, sector)
+        capital_s  = score_capital_quant(inst_str, vol, market_avg_vol, whale_pct, retail_exiting, t_data)
+        breakout_s = score_breakout_pattern(price, change_pct, t_data, vol)
+
         # 若乖離率過高，強制扣資金分數，避免高檔追逐
         if "乖離過高" in tech_flags:
-            capital_s = max(20, capital_s - 30)
+            capital_s  = max(20, capital_s - 30)
+            breakout_s = max(20, breakout_s - 20)
 
-        tech_s    = score_technical_quant(change_pct, price, t_data)
+        tech_s  = score_technical_quant(change_pct, price, t_data)
         if "突破月線" in tech_flags or "布林軌道強攻" in tech_flags:
             tech_s = min(100.0, tech_s + 15.0)
-            
-        macro_s   = score_macro(sector, change_pct)
-        trend_s   = score_trend(yoy, pe)
-        
-        composite = compute_composite_score(theme_s, capital_s, tech_s, macro_s, trend_s)
+
+        macro_s = score_macro(sector, change_pct)
+        trend_s = score_trend(yoy, pe)
+
+        composite = compute_composite_score(theme_s, capital_s, tech_s, macro_s, trend_s, breakout_s, dyn_weights)
 
         # 過濾掉權證與反向ETF，只保留實體股票
         if len(code) > 4 or "反1" in s["name"]:
@@ -500,15 +638,25 @@ def run_momentum_scan():
         }
         theme_tag = get_theme_tag(desc, sector)
 
+        # 突破型態標籤 (for generate_bull_reason & corrector)
+        breakout_flags = []
+        if t_data:
+            if t_data.get("new_high_60d"): breakout_flags.append("創 60 日新高")
+            elif t_data.get("new_high_20d"): breakout_flags.append("創 20 日新高")
+            r20 = t_data.get("range_pct_20d", 1.0)
+            if r20 < 0.12 and change_pct >= 3: breakout_flags.append("VCP突破")
+
         results.append({
             **s,
-            "ai_score": composite,
-            "signal": get_signal_label(composite),
-            "theme_tag": theme_tag,
-            "whale_pct": whale_pct,
-            "scores": scores_dict,
-            "reason": generate_bull_reason(scores_dict, inst_str, theme_tag, yoy, change_pct, whale_pct, retail_exiting, tech_flags, t_data, vol, price),
-            "history5d": t_data.get("history5d", []) if t_data else []
+            "ai_score":      composite,
+            "signal":        get_signal_label(composite),
+            "theme_tag":     theme_tag,
+            "whale_pct":     whale_pct,
+            "scores":        scores_dict,
+            "breakout_score": round(breakout_s, 1),
+            "breakout_flags": breakout_flags,
+            "reason":        generate_bull_reason(scores_dict, inst_str, theme_tag, yoy, change_pct, whale_pct, retail_exiting, tech_flags + breakout_flags, t_data, vol, price),
+            "history5d":     t_data.get("history5d", []) if t_data else []
         })
 
     # 按 ai_score 降序排列，取前 50 名
@@ -528,9 +676,18 @@ def run_momentum_scan():
         json.dump(out, f, ensure_ascii=False)
     os.replace(tmp_output, OUTPUT_FILE)
 
-    print(f"[{time.strftime('%H:%M:%S')}] 🔥 AI 飆股引擎量化計算完成 (掃描 {len(stocks)} 檔，取前 50 名輸出):")
+    print(f"[{time.strftime('%H:%M:%S')}] 🔥 AI 飆股引擎量化計算完成 (揃描 {len(stocks)} 檔，取前 50 名輸出) | 權重={dyn_weights}:")
     for i, s in enumerate(top_stocks[:5], 1):
-        print(f"  #{i} {s['symbol']} {s['name']:8s} AI評分={s['ai_score']} 題材={s['theme_tag']} 原因={s['reason']}")
+        bp = s.get('breakout_flags', [])
+        bp_str = f" 突破={'|'.join(bp)}" if bp else ""
+        print(f"  #{i} {s['symbol']} {s['name']:8s} AI={s['ai_score']} 突破得分={s.get('breakout_score',0)}{bp_str} 題材={s['theme_tag']}")
+
+    # 盤後每次揃描完成即儲存快照，供明日校正系統讀取
+    try:
+        import pattern_corrector
+        pattern_corrector.save_snapshot()
+    except Exception as e:
+        pass  # 校正模組不影響主引擎
 
 def main():
     print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 🚀 AI 飆股多因子量化評分引擎啟動...")

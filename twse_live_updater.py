@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 台灣股市 TWSE + TPEx 即時行情更新服務 (MIS API 即時版)
-- 盤中使用 MIS API (mis.twse.com.tw) 每 15 秒即時更新股價
+- 盤中使用 MIS API (mis.twse.com.tw) 每 3 秒即時更新股價 (最短安全間隔)
 - 盤後使用 OpenAPI 每 5 分鐘更新收盤行情
 - 啟動時從 OpenAPI 抓取完整股票清單 (含 PE/YoY/產業)
 - 僅補強熱門指標股的名稱/產業/評分/法人描述
@@ -19,8 +19,8 @@ SMART_MONEY_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sma
 
 # ── MIS API 設定 ──
 MIS_API_URL = "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
-MIS_BATCH_SIZE = 80  # 每批次查詢股數 (實測 100 可行，保守用 80)
-MIS_BATCH_DELAY = 0.3  # 批次間延遲 (秒)
+MIS_BATCH_SIZE = 80   # 每批次查詢股數
+MIS_BATCH_DELAY = 0.2  # 批次間延遲 (秒) — 降低以加快全市場更新速度
 MIS_FAIL_THRESHOLD = 3  # 連續失敗幾次後切換回 OpenAPI
 
 # 熱門指標股補強資訊 (只補充名稱、評分、法人說明、描述 — 絕不覆蓋股價與漲跌幅)
@@ -557,8 +557,8 @@ def main():
         cycle += 1
 
         if is_market_hours():
-            # ── 盤中模式: MIS API 每 15 秒 ──
-            time.sleep(15)
+            # ── 盤中模式: MIS API 每 3 秒 (TWSE 允許的最短安全頻率) ──
+            time.sleep(3)
 
             # 每小時重新從 OpenAPI 建構完整資料 (更新 PE/YoY/產業 等)
             if time.time() - last_openapi_refresh > OPENAPI_REFRESH_INTERVAL:
@@ -577,7 +577,7 @@ def main():
                 if updated > 0:
                     save_stocks(stocks)
                     mis_fail_count = 0
-                    if cycle % 4 == 0:  # 每分鐘印一次日誌
+                    if cycle % 20 == 0:  # 每分鐘印一次日誌
                         print(f"[{time.strftime('%H:%M:%S')}] ⚡ MIS 即時更新: {updated}/{len(stocks)} 檔 (交易日: {trade_date})")
                 else:
                     mis_fail_count += 1

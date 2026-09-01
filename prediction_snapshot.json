@@ -1,0 +1,805 @@
+{
+  "date": "2026-09-01",
+  "stocks": [
+    {
+      "symbol": "2317.TW",
+      "name": "鴻海",
+      "price": 256.0,
+      "ai_score": 92.1,
+      "scores": {
+        "題材": 98,
+        "資金": 80,
+        "線型": 100,
+        "大環境": 90,
+        "趨勢": 94
+      },
+      "breakout_score": 70.0,
+      "theme_tag": "CoWoS AI伺服器",
+      "change": "+2.4%"
+    },
+    {
+      "symbol": "3013.TW",
+      "name": "晟銘電",
+      "price": 92.4,
+      "ai_score": 91.6,
+      "scores": {
+        "題材": 98,
+        "資金": 78,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 86
+      },
+      "breakout_score": 100.0,
+      "theme_tag": "CoWoS AI伺服器",
+      "change": "+5.48%"
+    },
+    {
+      "symbol": "6669.TW",
+      "name": "緯穎",
+      "price": 7800.0,
+      "ai_score": 91.3,
+      "scores": {
+        "題材": 98,
+        "資金": 80,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 81
+      },
+      "breakout_score": 92.0,
+      "theme_tag": "CoWoS AI伺服器",
+      "change": "+9.94%"
+    },
+    {
+      "symbol": "2382.TW",
+      "name": "廣達",
+      "price": 342.0,
+      "ai_score": 89.9,
+      "scores": {
+        "題材": 90,
+        "資金": 77,
+        "線型": 100,
+        "大環境": 90,
+        "趨勢": 94
+      },
+      "breakout_score": 80.0,
+      "theme_tag": "電腦週邊",
+      "change": "+1.03%"
+    },
+    {
+      "symbol": "2368.TW",
+      "name": "金像電",
+      "price": 1225.0,
+      "ai_score": 89.3,
+      "scores": {
+        "題材": 90,
+        "資金": 78,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 82
+      },
+      "breakout_score": 85.0,
+      "theme_tag": "高速光通訊",
+      "change": "+5.15%"
+    },
+    {
+      "symbol": "2308.TW",
+      "name": "台達電",
+      "price": 1865.0,
+      "ai_score": 88.0,
+      "scores": {
+        "題材": 92,
+        "資金": 80,
+        "線型": 100,
+        "大環境": 90,
+        "趨勢": 74
+      },
+      "breakout_score": 80.0,
+      "theme_tag": "AI水冷散熱",
+      "change": "+1.36%"
+    },
+    {
+      "symbol": "3661.TW",
+      "name": "世芯-KY",
+      "price": 4275.0,
+      "ai_score": 87.4,
+      "scores": {
+        "題材": 96,
+        "資金": 66,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 82
+      },
+      "breakout_score": 90.0,
+      "theme_tag": "雲端自研ASIC",
+      "change": "+4.91%"
+    },
+    {
+      "symbol": "3583.TW",
+      "name": "辛耘",
+      "price": 773.0,
+      "ai_score": 86.9,
+      "scores": {
+        "題材": 98,
+        "資金": 73,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 64
+      },
+      "breakout_score": 95.0,
+      "theme_tag": "CoWoS AI伺服器",
+      "change": "+6.77%"
+    },
+    {
+      "symbol": "3653.TW",
+      "name": "健策",
+      "price": 5885.0,
+      "ai_score": 86.6,
+      "scores": {
+        "題材": 92,
+        "資金": 80,
+        "線型": 95,
+        "大環境": 82,
+        "趨勢": 82
+      },
+      "breakout_score": 58.0,
+      "theme_tag": "AI水冷散熱",
+      "change": "-1.75%"
+    },
+    {
+      "symbol": "4908.TWO",
+      "name": "前鼎",
+      "price": 229.5,
+      "ai_score": 86.6,
+      "scores": {
+        "題材": 100,
+        "資金": 69,
+        "線型": 90,
+        "大環境": 97,
+        "趨勢": 82
+      },
+      "breakout_score": 88.0,
+      "theme_tag": "矽光子 CPO",
+      "change": "+9.81%"
+    },
+    {
+      "symbol": "1560.TW",
+      "name": "中砂",
+      "price": 744.0,
+      "ai_score": 86.5,
+      "scores": {
+        "題材": 83,
+        "資金": 77,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 74
+      },
+      "breakout_score": 100.0,
+      "theme_tag": "半導體",
+      "change": "+8.93%"
+    },
+    {
+      "symbol": "3711.TW",
+      "name": "日月光投控",
+      "price": 610.0,
+      "ai_score": 86.0,
+      "scores": {
+        "題材": 72,
+        "資金": 84,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 74
+      },
+      "breakout_score": 65.0,
+      "theme_tag": "半導體",
+      "change": "+4.45%"
+    },
+    {
+      "symbol": "2379.TW",
+      "name": "瑞昱",
+      "price": 744.0,
+      "ai_score": 85.7,
+      "scores": {
+        "題材": 80,
+        "資金": 72,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 81
+      },
+      "breakout_score": 85.0,
+      "theme_tag": "半導體",
+      "change": "+3.19%"
+    },
+    {
+      "symbol": "3324.TWO",
+      "name": "雙鴻",
+      "price": 1375.0,
+      "ai_score": 85.1,
+      "scores": {
+        "題材": 92,
+        "資金": 66,
+        "線型": 90,
+        "大環境": 97,
+        "趨勢": 88
+      },
+      "breakout_score": 88.0,
+      "theme_tag": "AI水冷散熱",
+      "change": "+10.0%"
+    },
+    {
+      "symbol": "6451.TW",
+      "name": "訊芯-KY",
+      "price": 455.0,
+      "ai_score": 85.0,
+      "scores": {
+        "題材": 100,
+        "資金": 84,
+        "線型": 88,
+        "大環境": 82,
+        "趨勢": 64
+      },
+      "breakout_score": 73.0,
+      "theme_tag": "矽光子 CPO",
+      "change": "-0.22%"
+    },
+    {
+      "symbol": "1519.TW",
+      "name": "華城",
+      "price": 761.0,
+      "ai_score": 84.8,
+      "scores": {
+        "題材": 86,
+        "資金": 85,
+        "線型": 100,
+        "大環境": 93,
+        "趨勢": 50
+      },
+      "breakout_score": 80.0,
+      "theme_tag": "強網重電",
+      "change": "+4.39%"
+    },
+    {
+      "symbol": "1513.TW",
+      "name": "中興電",
+      "price": 166.0,
+      "ai_score": 83.6,
+      "scores": {
+        "題材": 86,
+        "資金": 68,
+        "線型": 100,
+        "大環境": 86,
+        "趨勢": 76
+      },
+      "breakout_score": 50.0,
+      "theme_tag": "重電綠能",
+      "change": "+1.22%"
+    },
+    {
+      "symbol": "3017.TW",
+      "name": "奇鋐",
+      "price": 3410.0,
+      "ai_score": 83.4,
+      "scores": {
+        "題材": 98,
+        "資金": 72,
+        "線型": 85,
+        "大環境": 82,
+        "趨勢": 82
+      },
+      "breakout_score": 68.0,
+      "theme_tag": "CoWoS AI伺服器",
+      "change": "-0.44%"
+    },
+    {
+      "symbol": "3034.TW",
+      "name": "聯詠",
+      "price": 552.0,
+      "ai_score": 83.3,
+      "scores": {
+        "題材": 72,
+        "資金": 70,
+        "線型": 100,
+        "大環境": 90,
+        "趨勢": 86
+      },
+      "breakout_score": 73.0,
+      "theme_tag": "半導體",
+      "change": "+2.22%"
+    },
+    {
+      "symbol": "2303.TW",
+      "name": "聯電",
+      "price": 132.5,
+      "ai_score": 82.7,
+      "scores": {
+        "題材": 72,
+        "資金": 74,
+        "線型": 100,
+        "大環境": 90,
+        "趨勢": 76
+      },
+      "breakout_score": 95.0,
+      "theme_tag": "半導體",
+      "change": "+2.71%"
+    },
+    {
+      "symbol": "5274.TWO",
+      "name": "信驊",
+      "price": 17120.0,
+      "ai_score": 82.3,
+      "scores": {
+        "題材": 95,
+        "資金": 61,
+        "線型": 85,
+        "大環境": 97,
+        "趨勢": 82
+      },
+      "breakout_score": 70.0,
+      "theme_tag": "伺服器管理晶片",
+      "change": "+6.57%"
+    },
+    {
+      "symbol": "6213.TW",
+      "name": "聯茂",
+      "price": 550.0,
+      "ai_score": 81.9,
+      "scores": {
+        "題材": 87,
+        "資金": 72,
+        "線型": 83,
+        "大環境": 90,
+        "趨勢": 82
+      },
+      "breakout_score": 68.0,
+      "theme_tag": "AI高階基板",
+      "change": "+0.36%"
+    },
+    {
+      "symbol": "3037.TW",
+      "name": "欣興",
+      "price": 971.0,
+      "ai_score": 81.6,
+      "scores": {
+        "題材": 88,
+        "資金": 87,
+        "線型": 43,
+        "大環境": 77,
+        "趨勢": 74
+      },
+      "breakout_score": 78.0,
+      "theme_tag": "先進封裝載板",
+      "change": "-2.8%"
+    },
+    {
+      "symbol": "2330.TW",
+      "name": "台積電",
+      "price": 2440.0,
+      "ai_score": 81.1,
+      "scores": {
+        "題材": 72,
+        "資金": 64,
+        "線型": 100,
+        "大環境": 90,
+        "趨勢": 81
+      },
+      "breakout_score": 68.0,
+      "theme_tag": "半導體",
+      "change": "+1.46%"
+    },
+    {
+      "symbol": "3443.TW",
+      "name": "創意",
+      "price": 5995.0,
+      "ai_score": 80.4,
+      "scores": {
+        "題材": 88,
+        "資金": 70,
+        "線型": 83,
+        "大環境": 82,
+        "趨勢": 82
+      },
+      "breakout_score": 68.0,
+      "theme_tag": "先進封裝載板",
+      "change": "-1.72%"
+    },
+    {
+      "symbol": "3363.TWO",
+      "name": "上詮",
+      "price": 786.0,
+      "ai_score": 80.4,
+      "scores": {
+        "題材": 100,
+        "資金": 67,
+        "線型": 80,
+        "大環境": 97,
+        "趨勢": 61
+      },
+      "breakout_score": 70.0,
+      "theme_tag": "矽光子 CPO",
+      "change": "+5.22%"
+    },
+    {
+      "symbol": "3231.TW",
+      "name": "緯創",
+      "price": 182.0,
+      "ai_score": 80.3,
+      "scores": {
+        "題材": 72,
+        "資金": 76,
+        "線型": 78,
+        "大環境": 90,
+        "趨勢": 94
+      },
+      "breakout_score": 58.0,
+      "theme_tag": "電腦週邊",
+      "change": "+2.25%"
+    },
+    {
+      "symbol": "5269.TW",
+      "name": "祥碩",
+      "price": 1470.0,
+      "ai_score": 80.3,
+      "scores": {
+        "題材": 80,
+        "資金": 70,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 48
+      },
+      "breakout_score": 83.0,
+      "theme_tag": "半導體",
+      "change": "+3.16%"
+    },
+    {
+      "symbol": "2897.TW",
+      "name": "王道銀行",
+      "price": 10.6,
+      "ai_score": 80.1,
+      "scores": {
+        "題材": 65,
+        "資金": 75,
+        "線型": 100,
+        "大環境": 80,
+        "趨勢": 76
+      },
+      "breakout_score": 100.0,
+      "theme_tag": "金融避風港",
+      "change": "+2.42%"
+    },
+    {
+      "symbol": "1709.TW",
+      "name": "和益",
+      "price": 36.4,
+      "ai_score": 79.4,
+      "scores": {
+        "題材": 55,
+        "資金": 67,
+        "線型": 100,
+        "大環境": 85,
+        "趨勢": 94
+      },
+      "breakout_score": 78.0,
+      "theme_tag": "21",
+      "change": "+8.82%"
+    },
+    {
+      "symbol": "2395.TW",
+      "name": "研華",
+      "price": 711.0,
+      "ai_score": 79.0,
+      "scores": {
+        "題材": 55,
+        "資金": 65,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 82
+      },
+      "breakout_score": 95.0,
+      "theme_tag": "25",
+      "change": "+5.02%"
+    },
+    {
+      "symbol": "2316.TW",
+      "name": "楠梓電",
+      "price": 166.5,
+      "ai_score": 78.7,
+      "scores": {
+        "題材": 55,
+        "資金": 57,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 94
+      },
+      "breakout_score": 92.0,
+      "theme_tag": "28",
+      "change": "+4.39%"
+    },
+    {
+      "symbol": "4949.TW",
+      "name": "有成精密",
+      "price": 81.7,
+      "ai_score": 78.7,
+      "scores": {
+        "題材": 55,
+        "資金": 60,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 88
+      },
+      "breakout_score": 100.0,
+      "theme_tag": "26",
+      "change": "+6.52%"
+    },
+    {
+      "symbol": "6196.TW",
+      "name": "帆宣",
+      "price": 507.0,
+      "ai_score": 78.7,
+      "scores": {
+        "題材": 55,
+        "資金": 60,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 88
+      },
+      "breakout_score": 77.0,
+      "theme_tag": "31",
+      "change": "+4.54%"
+    },
+    {
+      "symbol": "3515.TW",
+      "name": "華擎",
+      "price": 224.5,
+      "ai_score": 78.5,
+      "scores": {
+        "題材": 55,
+        "資金": 60,
+        "線型": 100,
+        "大環境": 90,
+        "趨勢": 94
+      },
+      "breakout_score": 73.0,
+      "theme_tag": "25",
+      "change": "+0.9%"
+    },
+    {
+      "symbol": "3706.TW",
+      "name": "神達",
+      "price": 95.7,
+      "ai_score": 78.4,
+      "scores": {
+        "題材": 55,
+        "資金": 60,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 86
+      },
+      "breakout_score": 100.0,
+      "theme_tag": "25",
+      "change": "+3.46%"
+    },
+    {
+      "symbol": "5876.TW",
+      "name": "上海商銀",
+      "price": 44.5,
+      "ai_score": 78.4,
+      "scores": {
+        "題材": 55,
+        "資金": 72,
+        "線型": 100,
+        "大環境": 87,
+        "趨勢": 76
+      },
+      "breakout_score": 100.0,
+      "theme_tag": "17",
+      "change": "+3.73%"
+    },
+    {
+      "symbol": "6789.TW",
+      "name": "采鈺",
+      "price": 490.0,
+      "ai_score": 78.4,
+      "scores": {
+        "題材": 55,
+        "資金": 67,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 74
+      },
+      "breakout_score": 100.0,
+      "theme_tag": "24",
+      "change": "+4.81%"
+    },
+    {
+      "symbol": "1773.TW",
+      "name": "勝一",
+      "price": 171.5,
+      "ai_score": 78.3,
+      "scores": {
+        "題材": 55,
+        "資金": 70,
+        "線型": 100,
+        "大環境": 85,
+        "趨勢": 81
+      },
+      "breakout_score": 100.0,
+      "theme_tag": "21",
+      "change": "+4.57%"
+    },
+    {
+      "symbol": "2890.TW",
+      "name": "永豐金",
+      "price": 41.5,
+      "ai_score": 78.3,
+      "scores": {
+        "題材": 55,
+        "資金": 65,
+        "線型": 100,
+        "大環境": 80,
+        "趨勢": 94
+      },
+      "breakout_score": 73.0,
+      "theme_tag": "17",
+      "change": "+0.97%"
+    },
+    {
+      "symbol": "1326.TW",
+      "name": "台化",
+      "price": 74.3,
+      "ai_score": 78.1,
+      "scores": {
+        "題材": 55,
+        "資金": 75,
+        "線型": 100,
+        "大環境": 75,
+        "趨勢": 81
+      },
+      "breakout_score": 100.0,
+      "theme_tag": "03",
+      "change": "+8.78%"
+    },
+    {
+      "symbol": "3532.TW",
+      "name": "台勝科",
+      "price": 402.0,
+      "ai_score": 78.0,
+      "scores": {
+        "題材": 55,
+        "資金": 65,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 74
+      },
+      "breakout_score": 73.0,
+      "theme_tag": "24",
+      "change": "+6.07%"
+    },
+    {
+      "symbol": "6488.TWO",
+      "name": "環球晶",
+      "price": 994.0,
+      "ai_score": 78.0,
+      "scores": {
+        "題材": 72,
+        "資金": 68,
+        "線型": 90,
+        "大環境": 97,
+        "趨勢": 64
+      },
+      "breakout_score": 80.0,
+      "theme_tag": "半導體",
+      "change": "+8.99%"
+    },
+    {
+      "symbol": "7711.TW",
+      "name": "永擎",
+      "price": 575.0,
+      "ai_score": 77.9,
+      "scores": {
+        "題材": 55,
+        "資金": 57,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 88
+      },
+      "breakout_score": 92.0,
+      "theme_tag": "25",
+      "change": "+7.48%"
+    },
+    {
+      "symbol": "2449.TW",
+      "name": "京元電子",
+      "price": 279.0,
+      "ai_score": 77.6,
+      "scores": {
+        "題材": 55,
+        "資金": 60,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 81
+      },
+      "breakout_score": 100.0,
+      "theme_tag": "24",
+      "change": "+8.56%"
+    },
+    {
+      "symbol": "3189.TW",
+      "name": "景碩",
+      "price": 874.0,
+      "ai_score": 77.6,
+      "scores": {
+        "題材": 55,
+        "資金": 64,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 74
+      },
+      "breakout_score": 80.0,
+      "theme_tag": "24",
+      "change": "+6.72%"
+    },
+    {
+      "symbol": "4958.TW",
+      "name": "臻鼎-KY",
+      "price": 535.0,
+      "ai_score": 77.6,
+      "scores": {
+        "題材": 55,
+        "資金": 64,
+        "線型": 100,
+        "大環境": 97,
+        "趨勢": 74
+      },
+      "breakout_score": 100.0,
+      "theme_tag": "28",
+      "change": "+7.0%"
+    },
+    {
+      "symbol": "2376.TW",
+      "name": "技嘉",
+      "price": 359.0,
+      "ai_score": 77.3,
+      "scores": {
+        "題材": 55,
+        "資金": 55,
+        "線型": 100,
+        "大環境": 90,
+        "趨勢": 94
+      },
+      "breakout_score": 68.0,
+      "theme_tag": "25",
+      "change": "+0.28%"
+    },
+    {
+      "symbol": "6962.TW",
+      "name": "奕力-KY",
+      "price": 32.45,
+      "ai_score": 77.3,
+      "scores": {
+        "題材": 55,
+        "資金": 63,
+        "線型": 100,
+        "大環境": 90,
+        "趨勢": 81
+      },
+      "breakout_score": 100.0,
+      "theme_tag": "24",
+      "change": "+2.85%"
+    },
+    {
+      "symbol": "2885.TW",
+      "name": "元大金",
+      "price": 66.7,
+      "ai_score": 77.2,
+      "scores": {
+        "題材": 55,
+        "資金": 60,
+        "線型": 100,
+        "大環境": 80,
+        "趨勢": 94
+      },
+      "breakout_score": 80.0,
+      "theme_tag": "17",
+      "change": "+1.99%"
+    }
+  ]
+}
