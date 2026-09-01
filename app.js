@@ -145,8 +145,24 @@ function flashAlertBtn() {
 }
 
 async function pollSurgeAlerts() {
-  // 無時間限制 — 後端 surge_alert.py 控制何時產生警報；UI 只負責顯示
+  // 只在盤中時間 (09:00 ~ 13:30) 顯示與輪詢警報
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes();
+  if (h < 9 || (h === 13 && m > 30) || h > 13) {
+    // 盤後隱藏警報按鈕及面板
+    const btn = document.getElementById('surge-alert-btn');
+    const panel = document.getElementById('surge-alert-panel');
+    if (btn) btn.style.display = 'none';
+    if (panel) panel.style.display = 'none';
+    surgeAlertVisible = false;
+    return;
+  }
+
   try {
+    // 盤中顯示警報按鈕
+    const btn = document.getElementById('surge-alert-btn');
+    if (btn && btn.style.display === 'none') btn.style.display = 'flex';
+
     const res = await fetch('surge_alerts.json?t=' + Date.now());
     if (!res.ok) return;
     const alerts = await res.json();
