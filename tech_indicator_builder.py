@@ -21,13 +21,14 @@ import os
 import math
 import concurrent.futures
 import re
+from datetime import datetime
 
 STOCKS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stocks-full-8000.json")
 CACHE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tech_cache.json")
 
 def get_historical_prices(symbol):
-    """從 Yahoo Finance API 抓取 3 個月的每日開高低收與成交量"""
-    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=3mo&interval=1d"
+    """從 Yahoo Finance API 抓取 1 年的每日開高低收、成交量與時間戳記"""
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=1y&interval=1d"
     try:
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'})
         with urllib.request.urlopen(req, timeout=10) as resp:
@@ -35,8 +36,9 @@ def get_historical_prices(symbol):
             
             result = data.get('chart', {}).get('result', [])
             if not result:
-                return [], [], [], []
+                return [], [], [], [], []
                 
+            timestamps = result[0].get('timestamp', [])
             quote = result[0].get('indicators', {}).get('quote', [{}])[0]
             closes = quote.get('close', [])
             volumes = quote.get('volume', [])
@@ -48,15 +50,17 @@ def get_historical_prices(symbol):
             valid_volumes = []
             valid_highs = []
             valid_lows = []
-            for c, v, h, l in zip(closes, volumes, highs, lows):
+            valid_timestamps = []
+            for t, c, v, h, l in zip(timestamps, closes, volumes, highs, lows):
                 if c is not None and v is not None and h is not None and l is not None:
                     valid_closes.append(c)
                     valid_volumes.append(v)
                     valid_highs.append(h)
                     valid_lows.append(l)
-            return valid_closes, valid_volumes, valid_highs, valid_lows
+                    valid_timestamps.append(t)
+            return valid_closes, valid_volumes, valid_highs, valid_lows, valid_timestamps
     except Exception as e:
-        return [], [], [], []
+        return [], [], [], [], []
 
 def calculate_ema(prices, period):
     """計算指數移動平均線 (EMA)"""
@@ -179,8 +183,8 @@ def calculate_kd(highs, lows, closes, period=9):
         
     return k_list, d_list
 
-def calc_all_indicators(closes, volumes, highs, lows):
-    """綜合計算所有均線、布林通道與進階量化指標"""
+def calc_all_indicators(closes, volumes, highs, lows, timestamps=None):
+    """綜合計算所有均線、布林通道與進階量化指標 (含5日/周線/月線序列)"""
     if len(closes) < 30: # 確保有足夠的數據溫機計算 EMA26
         return None
         
@@ -190,6 +194,7 @@ def calc_all_indicators(closes, volumes, highs, lows):
     sma5 = sum(closes[-5:]) / 5.0 if len(closes) >= 5 else sum(closes) / len(closes)
     sma10 = sum(closes[-10:]) / 10.0 if len(closes) >= 10 else sum(closes) / len(closes)
     sma20 = sum(c_20) / 20.0
+    sma60 = sum(closes[-60:]) / 60.0 if len(closes) >= 60 else sum(closes) / len(closes)
     vol_sma20 = sum(v_20) / 20.0
     
     # 計算布林通道
@@ -242,10 +247,32 @@ def calc_all_indicators(closes, volumes, highs, lows):
     mid_20d = (high_20d + low_20d) / 2 if (high_20d + low_20d) > 0 else 1
     range_pct_20d = (high_20d - low_20d) / mid_20d if mid_20d > 0 else 1.0
 
+    # 格式化日期序列
+    dates5d = [datetime.fromtimestamp(t).strftime('%m/%d') for t in timestamps[-5:]] if (timestamps and len(timestamps) >= 5) else []
+    dates20d = [datetime.fromtimestamp(t).strftime('%m/%d') for t in timestamps[-20:]] if (timestamps and len(timestamps) >= 20) else []
+    dates60d = [datetime.fromtimestamp(t).strftime('%m/%d') for t in timestamps[-60:]] if (timestamps and len(timestamps) >= 60) else []
+
+    # 周線採樣 (每 5 個交易日採樣一次收盤，最近 24 週)
+    weekly_closes = closes[-1::-5][:24][::-1]
+    if timestamps and len(timestamps) >= len(closes):
+        weekly_timestamps = timestamps[-1::-5][:24][::-1]
+        dates_weekly = [datetime.fromtimestamp(t).strftime('%m/%d') for t in weekly_timestamps]
+    else:
+        dates_weekly = []
+
+    # 月線採樣 (每 20 個交易日採樣一次收盤，最近 12 個月)
+    monthly_closes = closes[-1::-20][:12][::-1]
+    if timestamps and len(timestamps) >= len(closes):
+        monthly_timestamps = timestamps[-1::-20][:12][::-1]
+        dates_monthly = [datetime.fromtimestamp(t).strftime('%y/%m') for t in monthly_timestamps]
+    else:
+        dates_monthly = []
+
     return {
         "sma5": round(sma5, 2),
         "sma10": round(sma10, 2),
         "sma20": round(sma20, 2),
+        "sma60": round(sma60, 2),
         "upper_band": round(upper_band, 2),
         "lower_band": round(lower_band, 2),
         "band_width": round(band_width, 4),
@@ -265,11 +292,20 @@ def calc_all_indicators(closes, volumes, highs, lows):
         "new_high_20d": new_high_20d,
         "new_high_60d": new_high_60d,
         "range_pct_20d": round(range_pct_20d, 4),
-        "history5d": [round(c, 2) for c in closes[-5:]] if len(closes) >= 5 else [round(c, 2) for c in closes]
+        "history5d": [round(c, 2) for c in closes[-5:]] if len(closes) >= 5 else [round(c, 2) for c in closes],
+        "dates5d": dates5d,
+        "history20d": [round(c, 2) for c in closes[-20:]] if len(closes) >= 20 else [round(c, 2) for c in closes],
+        "dates20d": dates20d,
+        "history60d": [round(c, 2) for c in closes[-60:]] if len(closes) >= 60 else [round(c, 2) for c in closes],
+        "dates60d": dates60d,
+        "history_weekly": [round(c, 2) for c in weekly_closes],
+        "dates_weekly": dates_weekly,
+        "history_monthly": [round(c, 2) for c in monthly_closes],
+        "dates_monthly": dates_monthly
     }
 
 def build_cache():
-    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 🚀 啟動進階量化指標(MA/布林/RSI/KD/MACD/ATR)平行計算...")
+    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 🚀 啟動進階量化指標(5日/周線/月線/MA/布林/RSI/KD/MACD)平行計算...")
     
     if not os.path.exists(STOCKS_FILE):
         print(f"❌ 錯誤：找不到 {STOCKS_FILE} 檔案！")
@@ -281,19 +317,27 @@ def build_cache():
     except Exception as e:
         print(f"❌ 讀取 {STOCKS_FILE} 失敗: {e}")
         return
+
+    existing_cache = {}
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, "r", encoding="utf-8") as f:
+                prev_out = json.load(f)
+                existing_cache = prev_out.get("data", {})
+                print(f"  📂 載入既有指標快取 {len(existing_cache)} 筆，進行增量強化...")
+        except Exception:
+            existing_cache = {}
         
     candidate_stocks = []
     for s in stocks:
         symbol = s.get("symbol", "")
         market = s.get("market", "")
-        volume = s.get("volume", 0) or 0
-        code = symbol.split(".")[0]
-        if market in ["TWSE上市", "TPEx上櫃"] and volume >= 500 and len(code) == 4:
+        if market in ["TWSE上市", "TPEx上櫃", "台股ETF", "台股ETN"]:
             candidate_stocks.append(s)
             
     candidate_stocks.sort(key=lambda x: x.get("volume", 0) or 0, reverse=True)
     target_stocks = candidate_stocks
-    print(f"  📊 篩選出 {len(candidate_stocks)} 檔液態個股，進行平行爬取...")
+    print(f"  📊 篩選出 {len(candidate_stocks)} 檔標的，進行 1 年多週期平行爬取...")
     
     tech_cache = {}
     
@@ -301,16 +345,16 @@ def build_cache():
         symbol = s.get("symbol", "")
         if not symbol:
             return None
-        closes, volumes, highs, lows = get_historical_prices(symbol)
+        closes, volumes, highs, lows, timestamps = get_historical_prices(symbol)
         if closes and volumes and highs and lows:
-            indicators = calc_all_indicators(closes, volumes, highs, lows)
+            indicators = calc_all_indicators(closes, volumes, highs, lows, timestamps)
             if indicators:
                 code = symbol.split(".")[0]
                 return code, indicators
         return None
 
     start_time = time.time()
-    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=25) as executor:
         future_to_stock = {executor.submit(process_stock, s): s for s in target_stocks}
         for future in concurrent.futures.as_completed(future_to_stock):
             res = future.result()
@@ -320,15 +364,18 @@ def build_cache():
                 
     elapsed = time.time() - start_time
     
+    # 合併既有快取，確保資料完整覆蓋
+    merged_data = {**existing_cache, **tech_cache}
+    
     out = {
         "generated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "data": tech_cache
+        "data": merged_data
     }
     
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False)
         
-    print(f"[{time.strftime('%H:%M:%S')}] ✅ 技術指標快取建立完成，共 {len(tech_cache)} 筆 (耗時: {elapsed:.2f} 秒) → {CACHE_FILE}")
+    print(f"[{time.strftime('%H:%M:%S')}] ✅ 多週期指標快取更新完成，共 {len(merged_data)} 筆 (本次計算: {len(tech_cache)} 筆, 耗時: {elapsed:.2f} 秒) → {CACHE_FILE}")
 
 if __name__ == "__main__":
     build_cache()

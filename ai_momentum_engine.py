@@ -3,14 +3,20 @@
 """
 AI 超強飆股多因子評分引擎 (2026年量化升級版 - RSI/KD/MACD/ATR + 突破型態 + 動態權重)
 結合: 法人動向 + 技術線型 + 題材熱度 + 成交量能 + 股價動能 + 集保大戶籌碼 + 日權自我校正
-每 30 秒揃描全台股 6,000+ 標的，讀取 tech_cache.json 並輸出 momentum-stocks.json
+每 30 秒掃描全台股標的，讀取 tech_cache.json 並輸出 momentum-stocks.json
 """
 
 import json
 import os
+import sys
 import time
 import math
 import re
+
+try:
+    sys.stdout.reconfigure(line_buffering=True)
+except Exception:
+    pass
 
 BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
 INPUT_FILE  = os.path.join(BASE_DIR, "stocks-full-8000.json")
@@ -688,6 +694,13 @@ def run_momentum_scan():
         pattern_corrector.save_snapshot()
     except Exception as e:
         pass  # 校正模組不影響主引擎
+
+    # 同步更新即時飆升警報 (surge_alerts.json) - 傳入全市場評分結果以支援所有飆升個股
+    try:
+        import surge_alert
+        surge_alert.update_from_engine(stocks, results)
+    except Exception as e:
+        pass
 
 def main():
     print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 🚀 AI 飆股多因子量化評分引擎啟動...")

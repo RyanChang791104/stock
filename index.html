@@ -6,30 +6,23 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>台灣股市全市場 (8,200+ 標的) 實時串流與飆股量化篩選系統</title>
-  <meta name="description" content="涵蓋全台股 8,200+ 檔上市、上櫃、興櫃、ETF與權證之實時串流行情、多因子量化飆股篩選與本地 AI 診斷。">
+  <title>台灣股市全市場實時串流與飆股量化篩選系統</title>
+  <meta name="description" content="涵蓋全台股上市、上櫃、熱門ETF與ETN之實時串流行情、多因子量化飆股篩選與本地 AI 診斷。">
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260721_0010">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-  <script src="app.js?v=20260721_0010"></script>
+  <link rel="stylesheet" href="style.css?v=20261007_v7_surge_mixed">
+  <script src="chart.min.js"></script>
+  <script>if(!window.Chart) document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>');</script>
+  <script src="app.js?v=20261012_surge_vol3000"></script>
 </head>
 <body>
-  <!-- 跑馬燈 Ticker -->
+  <!-- 跑馬燈 Ticker (由 app.js 即時串流動態載入最新全市場撮合行情) -->
   <div class="ticker-wrap">
     <div class="ticker-track">
-      <div class="ticker-item"><span class="t-name">加權指數 (TAIEX)</span> <span class="t-val">42,671.27</span> <span class="t-down">-2,953.71 (-6.47%)</span></div>
-      <div class="ticker-item"><span class="t-name">台積電 (2330)</span> <span class="t-val">NT$ 2,290.00</span> <span class="t-down">-180.00 (-7.29%)</span></div>
-      <div class="ticker-item"><span class="t-name">瑞昱 (2379)</span> <span class="t-val">NT$ 718.00</span> <span class="t-up">+20.00 (+2.86%)</span></div>
-      <div class="ticker-item"><span class="t-name">聯發科 (2454)</span> <span class="t-val">NT$ 1,580.00</span> <span class="t-up">+35.00 (+2.26%)</span></div>
-      <div class="ticker-item"><span class="t-name">鴻海 (2317)</span> <span class="t-val">NT$ 235.00</span> <span class="t-up">+4.50 (+1.95%)</span></div>
-      <div class="ticker-item"><span class="t-name">緯穎 (6669)</span> <span class="t-val">NT$ 5,095.00</span> <span class="t-up">+235.00 (+4.83%)</span></div>
-      <div class="ticker-item"><span class="t-name">0050 (元大台灣50)</span> <span class="t-val">NT$ 195.00</span> <span class="t-up">+2.40 (+1.25%)</span></div>
-      <div class="ticker-item"><span class="t-name">0056 (元大高股息)</span> <span class="t-val">NT$ 39.50</span> <span class="t-up">+0.18 (+0.45%)</span></div>
-      <div class="ticker-item"><span class="t-name">美元 / 新台幣</span> <span class="t-val">32.48</span> <span class="t-up">+0.06 (+0.18%)</span></div>
+      <div class="ticker-item"><span class="t-name">⚡ 台灣股市全市場即時連線</span> <span class="t-val">連線中... 正在載入 TWSE/TPEx 官方實時撮合行情</span></div>
     </div>
   </div>
 
@@ -43,20 +36,24 @@
           </svg>
         </div>
         <div class="brand-titles">
-          <h1>台灣股市全市場 (8,200+ 標的) 實時串流數據庫</h1>
-          <span class="sub-title">涵蓋 TWSE上市 / TPEx上櫃 / 興櫃 / ETF / 權證全標的</span>
+          <h1>台灣股市全市場實時串流數據庫</h1>
+          <span class="sub-title">涵蓋 TWSE上市 / TPEx上櫃 / 熱門台股 ETF / ETN 全市場即時撮合行情</span>
         </div>
       </div>
 
       <nav class="nav-links">
-        <button class="nav-tab" data-tab="screener">🔥 全台股實時篩選引擎 (8,200+)</button>
+        <button class="nav-tab active" data-tab="screener">🔥 全台股實時篩選引擎</button>
         <button class="nav-tab" data-tab="ai-momentum">🤖 AI 六維飆股漏斗 (即時)</button>
-        <button class="nav-tab" data-tab="ai-analyst">AI 股市智庫 (Qwen 2.5)</button>
+        <button class="nav-tab" data-tab="surge-tab">⚡ 盤中急拉 (族群分組)</button>
+        <button class="nav-tab" data-tab="surge-mixed-tab">⚡ 盤中急拉 (綜合混排·無分群)</button>
       </nav>
 
-      <div class="server-badge">
+      <div class="server-badge" style="display:flex; align-items:center; gap:8px;">
+        <button id="top-surge-badge-btn" class="live-badge" style="background:linear-gradient(135deg, #ef4444, #b91c1c); color:#fff; border:none; box-shadow:0 2px 10px rgba(239,68,68,0.4); cursor:pointer;" title="查看盤中短時間快速往上拉的急拉飆股">
+          ⚡ 盤中急拉 (Top 50) <span id="top-surge-count" style="background:rgba(255,255,255,0.25); padding:1px 7px; border-radius:10px;">0</span>
+        </button>
         <button id="toggle-live-btn" class="live-badge live-on">
-          <span class="dot-live"></span> 🔴 實時串流更新中 (5秒)
+          <span class="dot-live"></span> 🔴 行情串流中 (1秒實時)
         </button>
       </div>
     </header>
@@ -64,17 +61,66 @@
     <!-- 主內容區 -->
     <main class="main-container">
 
-      <!-- 分頁 1: 8,200+ 全台股強勢飆股篩選引擎 -->
+      <!-- 分頁 1: 全台股強勢飆股篩選引擎 -->
       <section class="tab-pane active" id="screener">
+
+        <!-- 今日最強起漲飆股頂部即時榜 (Top Gainers on the top) -->
+        <div class="top-gainers-hero" style="margin-bottom: 20px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 16px; padding: 16px 20px; box-shadow: 0 4px 24px rgba(239, 68, 68, 0.12);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.05rem; font-weight:900; color:#f87171; display:flex; align-items:center; gap:6px;">
+                🔥 今日漲幅最強飆股 (Top Growing Stocks)
+              </span>
+              <span style="background:rgba(239,68,68,0.2); color:#fca5a5; font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:12px; border:1px solid rgba(239,68,68,0.4);">
+                全市場起漲指標
+              </span>
+            </div>
+            <button id="hero-open-surge-btn" style="background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3); border-radius:20px; padding:4px 12px; font-size:0.78rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px; transition:all 0.2s;" title="盤中短時間快速往上拉標的清單">
+              ⚡ 盤中急拉飆升清單 (Top 50) »
+            </button>
+          </div>
+          <div id="top-gainers-strip" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap:10px;">
+            <!-- 8 檔漲幅最高的股票動態渲染 -->
+          </div>
+        </div>
+
+        <!-- 盤中急拉即時族群彩色框 快捷導引橫幅 -->
+        <div id="screener-surge-shortcut-banner" style="margin-bottom: 20px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(168, 85, 247, 0.15)); border: 1.5px solid rgba(239, 68, 68, 0.5); border-radius: 16px; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 24px rgba(239, 68, 68, 0.18); transition: all 0.25s ease;">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#fff; font-size:1.25rem; box-shadow:0 0 14px rgba(239,68,68,0.6); flex-shrink:0;">⚡</div>
+            <div>
+              <div style="font-weight:900; color:#fff; font-size:1.02rem; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span>盤中急拉飆升榜 (50 檔就緒)：支援【產業族群彩色框】與【綜合混合不分群】兩種模式</span>
+                <span id="screener-surge-banner-count" style="background:rgba(239,68,68,0.3); border:1px solid rgba(239,68,68,0.6); color:#fca5a5; font-size:0.78rem; font-weight:800; padding:1px 9px; border-radius:12px;">50 檔</span>
+              </div>
+              <div style="font-size:0.8rem; color:#cbd5e1; margin-top:3px;">
+                可依需求選擇「依 16 大產業彩色框分組 (均拉最高置頂)」或「全市場 50 檔直接混排不分群」即時瀏覽！
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <button onclick="switchTab('surge-tab')" style="background:linear-gradient(135deg, #ef4444, #dc2626); color:#fff; padding:7px 14px; border:none; border-radius:10px; font-weight:800; font-size:0.82rem; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 10px rgba(239,68,68,0.4); white-space:nowrap;">
+              🏷️ 族群彩色框 »
+            </button>
+            <button onclick="switchTab('surge-mixed-tab')" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; padding:7px 14px; border:none; border-radius:10px; font-weight:800; font-size:0.82rem; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 10px rgba(245,158,11,0.4); white-space:nowrap;">
+              ⚡ 綜合混排(不分群) »
+            </button>
+          </div>
+        </div>
+
         <!-- 預設策略按鈕 -->
         <div class="strategy-preset-bar">
           <span class="preset-label">🔥 一鍵載入強勢飆股策略模式：</span>
           <div class="preset-buttons">
             <button class="preset-btn active" data-mode="burst">🔥 飆股起漲模式 (法人鎖碼+月營收雙增)</button>
+            <button class="preset-btn" data-mode="surge-only">⚡ 僅看盤中急拉飆股 (實時 50 檔)</button>
+            <button class="preset-btn" data-mode="surge-50">⚡ 盤中急拉 (族群彩色框專區)</button>
+            <button class="preset-btn" data-mode="surge-mixed">⚡ 盤中急拉 (全市場混排專區)</button>
             <button class="preset-btn" data-mode="ai-growth">🚀 AI & 半導體高成長股 (營收年增>30%)</button>
             <button class="preset-btn" data-mode="undervalued">💰 低估高爆發股 (P/E < 20x & 獲利倍增)</button>
             <button class="preset-btn" data-mode="institutional">📊 外資投信雙買股 (法人籌碼集中)</button>
-            <button class="preset-btn" data-mode="all">🌐 全台股動態檢索 (8,200+)</button>
+            <button class="preset-btn" data-mode="etf">💎 熱門台股 ETF 專區 (0050/高股息/美債)</button>
+            <button class="preset-btn" data-mode="all">🌐 全市場動態檢索 (含個股/ETF/ETN)</button>
           </div>
         </div>
 
@@ -82,19 +128,20 @@
         <div class="filter-panel-card">
           <div class="panel-row">
             <div class="filter-group">
-              <label>🔍 搜尋全台股代號 / 名稱 / 題材概念 (如: 2330, 0050, 世芯, 散熱...)</label>
+              <label>🔍 搜尋全台股代號 / 名稱 / 題材概念 (如: 0050, 00878, 2330, 世芯, 散熱...)</label>
               <input type="text" id="screener-search" placeholder="輸入股票代號、名稱或題材關鍵字...">
             </div>
 
             <div class="filter-group">
               <label>🏛️ 市場交易板塊</label>
               <select id="screener-market">
-                <option value="all">全市場板塊 (8,200+ 標的)</option>
-                <option value="TWSE上市">TWSE 上市股票 (約1,050檔)</option>
-                <option value="TPEx上櫃">TPEx 上櫃股票 (約820檔)</option>
-                <option value="興櫃">興櫃股票 (約320檔)</option>
-                <option value="台股ETF">熱門台股 ETF (0050/0056/00878...)</option>
-                <option value="權證標的">權證與可轉債標的</option>
+                <option value="all">全市場全部標的 (含個股/ETF/ETN，共2,320+)</option>
+                <option value="stocks_only">全市場普通股 (純實體個股 1,960+)</option>
+                <option value="TWSE上市">TWSE 上市股票</option>
+                <option value="TPEx上櫃">TPEx 上櫃股票</option>
+                <option value="ETF">🔥 熱門台股 ETF (高股息/美債/科技，360+)</option>
+                <option value="ETN">📜 指數投資證券 ETN (13+)</option>
+                <option value="興櫃">興櫃股票</option>
               </select>
             </div>
 
@@ -102,6 +149,8 @@
               <label>🏢 產業類別篩選</label>
               <select id="screener-filter">
                 <option value="all">全產業類股</option>
+                <option value="ETF">🔥 台股熱門 ETF (高息/債券/科技/指數)</option>
+                <option value="ETN">📜 指數投資證券 ETN</option>
                 <option value="半導體">半導體與 CoWoS 設備</option>
                 <option value="電腦週邊">AI伺服器與水冷散熱</option>
                 <option value="光電通訊">矽光子 CPO 與高階 PCB</option>
@@ -124,7 +173,7 @@
               <label>⚡ 最高本益比 (Max P/E)</label>
               <div class="slider-with-val">
                 <input type="range" id="filter-pe" min="10" max="60" step="5" value="60">
-                <span class="badge-val" id="pe-val">≤ 60x</span>
+                <span class="badge-val" id="pe-val">不限</span>
               </div>
             </div>
           </div>
@@ -132,28 +181,40 @@
 
         <!-- 篩選結果表格與分頁 -->
         <div class="screener-table-wrap">
-          <div class="table-results-header">
+          <div class="table-results-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
             <span id="results-count-text">載入全台股大數據中...</span>
-            <span class="sort-hint">預設依「飆股成長評分 (0-100分)」排序</span>
+            <div class="reorder-controls-group">
+              <span class="sort-hint" style="color:var(--text-dim); margin-right:4px;">依排序條件展示</span>
+              <div style="display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
+                <label for="reorder-interval-select" style="font-size:0.75rem; color:#94a3b8; font-weight:700;">📍 排名重排頻率:</label>
+                <select id="reorder-interval-select" style="background:transparent; border:none; color:#38bdf8; font-size:0.75rem; font-weight:700; cursor:pointer; outline:none;">
+                  <option value="30" selected>延緩 30 秒 (預設)</option>
+                  <option value="60">延緩 60 秒</option>
+                  <option value="15">延緩 15 秒</option>
+                  <option value="0">位置凍結 (手動重排)</option>
+                </select>
+              </div>
+              <span id="reorder-countdown-badge" style="font-family:var(--font-mono); font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:6px; border:1px solid rgba(56,189,248,0.4); background:rgba(56,189,248,0.1); color:#38bdf8;">⏳ 下次重排: 30s</span>
+              <button id="btn-reorder-now" class="reorder-now-btn" style="background:rgba(99,102,241,0.25); color:#a5b4fc; border:1px solid rgba(99,102,241,0.5); padding:3px 10px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; transition:all 0.2s;" title="立即依最新即時行情重新排列目前所有股票位置">⚡ 立即重排</button>
+            </div>
           </div>
 
           <table class="screener-table">
             <thead>
               <tr>
-                <th class="sortable active-sort" data-key="score">飆股評分 <span class="sort-arrow">▼</span></th>
+                <th class="sortable" data-key="score">飆股評分 <span class="sort-arrow">⇅</span></th>
                 <th class="sortable" data-key="symbol">股票代號 <span class="sort-arrow">⇅</span></th>
                 <th>公司名稱與強勢題材</th>
                 <th>交易板塊</th>
                 <th>產業類別</th>
                 <th class="sortable" data-key="price">最新實時股價 (NT$) <span class="sort-arrow">⇅</span></th>
-                <th class="sortable" data-key="changePct">今日漲跌 <span class="sort-arrow">⇅</span></th>
+                <th class="sortable active-sort" data-key="changePct">今日漲跌 <span class="sort-arrow">▼</span></th>
                 <th class="sortable" data-key="yoy">營收年增 (YoY) <span class="sort-arrow">⇅</span></th>
                 <th class="sortable" data-key="pe">本益比 <span class="sort-arrow">⇅</span></th>
                 <th>近季EPS與季增率(QoQ)</th>
                 <th>成交量與動能</th>
                 <th>法人籌碼狀態</th>
                 <th>5日趨勢</th>
-                <th>AI 買點診斷</th>
               </tr>
             </thead>
             <tbody id="screener-body">
@@ -170,7 +231,7 @@
         <div class="panel header-panel">
           <h2>🤖 AI 超強飆股漏斗 (即時多因子演算)</h2>
           <p>
-            基於 2026 旗艦模型，每 30 秒自動掃描全台股 6,000+ 標的，剔除權證與 ETF。深度結合五大核心：<br>
+            基於 2026 旗艦模型，每 30 秒自動深度多因子演算全台股標的。深度結合五大核心：<br>
             <span class="pill pill-green">題材</span> <span class="pill pill-orange">資金</span> <span class="pill pill-purple">線型</span>
             <span class="pill pill-blue">大環境</span> <span class="pill pill-green">趨勢</span>
           </p>
@@ -212,7 +273,352 @@
                 </tr>
               </thead>
               <tbody id="momentum-body">
-                <tr><td colspan="9" style="text-align:center; padding: 40px;">🔄 正在從 AI 引擎載入分析結果...</td></tr>
+                <tr><td colspan="13" style="text-align:center; padding: 40px;">🔄 正在從 AI 引擎載入分析結果...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 盤中急拉精選 50 檔專屬 Tab -->
+      <section id="surge-tab" class="tab-pane">
+        <div class="panel header-panel" style="border-left: 4px solid #ef4444; margin-bottom: 14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h2 style="color:#f87171; display:flex; align-items:center; gap:8px;">⚡ 盤中急拉飆升 (精選 Top 50 即時榜 · 族群彩色框)</h2>
+              <p style="margin-top:6px; color:#cbd5e1;">
+                全市場秒級即時串流監控：精準抓取 1分鐘、3分鐘、5分鐘內價格急速往上拉升與強勢大戶主升推升標的，杜絕假突破出貨陷阱。
+              </p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span id="surge-tab-count-badge" style="background:#ef4444; color:#fff; font-size:0.85rem; font-weight:800; padding:4px 12px; border-radius:20px;">
+                50 檔就緒
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⚡ 即時急拉量化統計看板 (Surge Real-time Metrics Banner) -->
+        <div class="surge-metrics-bar">
+          <div class="surge-metric-card">
+            <span class="metric-label">⚡ 盤中急拉監控</span>
+            <span class="metric-val" id="surge-metric-total" style="color:#ef4444;">50 <span style="font-size:0.8rem;color:#94a3b8;">檔</span></span>
+          </div>
+          <div class="surge-metric-card">
+            <span class="metric-label">🚀 平均急拉推升</span>
+            <span class="metric-val" id="surge-metric-avg" style="color:#fbbf24;">+0.00%</span>
+          </div>
+          <div class="surge-metric-card">
+            <span class="metric-label">🔥 急拉推升榜首</span>
+            <span class="metric-val" id="surge-metric-top" style="color:#38bdf8; font-size:1.0rem;">--</span>
+          </div>
+          <div class="surge-metric-card">
+            <span class="metric-label">🏆 最強起漲族群</span>
+            <span class="metric-val" id="surge-metric-sector" style="color:#a855f7; font-size:1.0rem;">--</span>
+          </div>
+          <div class="surge-metric-card" style="justify-content:center; align-items:flex-start; gap:6px;">
+            <div style="display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap;">
+              <button id="surge-sound-toggle-btn" class="surge-sound-btn" onclick="toggleSurgeAlertSound()" title="當有新的高速急拉股票時觸發音效提示">
+                🔔 警報音效: 關閉
+              </button>
+              <button id="surge-freeze-stream-btn" class="surge-filter-btn" onclick="toggleSurgeStreamFreeze()" style="padding:4px 10px;" title="鎖定目前即時排列，避免畫面跳動">
+                🔴 實時串流中
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⚡ 極速多維精準篩選控制台 (Precision Real-Time Filter Console) -->
+        <div class="surge-precision-filter-bar">
+          <!-- 搜尋列與快速重設 -->
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div style="position:relative; flex:1; min-width:240px;">
+              <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#94a3b8; pointer-events:none;">🔍</span>
+              <input type="text" id="surge-tab-filter-search" class="surge-search-input" placeholder="極速即時篩選：輸入代號、名稱、產業概念 (快捷鍵 /)..." oninput="onSurgeFilterChange()">
+            </div>
+            <button class="surge-filter-btn" onclick="resetSurgeFilters()" style="padding:8px 14px; background:rgba(239,68,68,0.15); border-color:rgba(239,68,68,0.4); color:#fca5a5;" title="清除所有篩選條件，顯示全部 50 檔">
+              🔄 重設篩選
+            </button>
+            <span id="surge-filter-matched-badge" style="font-size:0.8rem; font-weight:800; color:#38bdf8; background:rgba(56,189,248,0.12); padding:5px 12px; border-radius:8px; border:1px solid rgba(56,189,248,0.3); white-space:nowrap;">
+              50 / 50 檔
+            </span>
+          </div>
+
+          <!-- 精準維度篩選組 -->
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <!-- 1. 急拉推升週期 -->
+            <div class="surge-filter-pills-row">
+              <span class="surge-filter-label">⚡ 急拉型態：</span>
+              <button class="surge-filter-btn active" data-surge-type="all" onclick="setSurgeTypeFilter('all')">全部型態</button>
+              <button class="surge-filter-btn" data-surge-type="1m" onclick="setSurgeTypeFilter('1m')">⚡ 1分鐘極速拉升</button>
+              <button class="surge-filter-btn" data-surge-type="3m" onclick="setSurgeTypeFilter('3m')">⚡ 3分鐘強攻</button>
+              <button class="surge-filter-btn" data-surge-type="5m" onclick="setSurgeTypeFilter('5m')">⚡ 5分鐘主升</button>
+              <button class="surge-filter-btn" data-surge-type="wave" onclick="setSurgeTypeFilter('wave')">⚡ 波段推升</button>
+            </div>
+
+            <!-- 2. 推升幅度下限 & 成交量門檻 & AI勝率 & 市場板塊 -->
+            <div class="surge-filter-pills-row">
+              <span class="surge-filter-label">📈 推升幅度：</span>
+              <button class="surge-filter-btn active" data-surge-minpct="0" onclick="setSurgeMinPctFilter(0)">不限</button>
+              <button class="surge-filter-btn" data-surge-minpct="2" onclick="setSurgeMinPctFilter(2)">≥ 2%</button>
+              <button class="surge-filter-btn" data-surge-minpct="3" onclick="setSurgeMinPctFilter(3)">≥ 3%</button>
+              <button class="surge-filter-btn" data-surge-minpct="5" onclick="setSurgeMinPctFilter(5)">≥ 5%</button>
+              <button class="surge-filter-btn" data-surge-minpct="7" onclick="setSurgeMinPctFilter(7)">≥ 7% 強噴</button>
+
+              <span class="surge-filter-label" style="margin-left:8px;">📊 成交量：</span>
+              <button class="surge-filter-btn active" data-surge-minvol="0" onclick="setSurgeMinVolFilter(0)">不限</button>
+              <button class="surge-filter-btn" data-surge-minvol="1000" onclick="setSurgeMinVolFilter(1000)">≥ 1,000張</button>
+              <button class="surge-filter-btn" data-surge-minvol="3000" onclick="setSurgeMinVolFilter(3000)">≥ 3,000張</button>
+              <button class="surge-filter-btn" data-surge-minvol="5000" onclick="setSurgeMinVolFilter(5000)">≥ 5,000張</button>
+              <button class="surge-filter-btn" data-surge-minvol="10000" onclick="setSurgeMinVolFilter(10000)">≥ 1萬張</button>
+
+              <span class="surge-filter-label" style="margin-left:8px;">🤖 AI勝率：</span>
+              <button class="surge-filter-btn active" data-surge-minai="0" onclick="setSurgeMinAiFilter(0)">不限</button>
+              <button class="surge-filter-btn" data-surge-minai="70" onclick="setSurgeMinAiFilter(70)">≥ 70分</button>
+              <button class="surge-filter-btn" data-surge-minai="80" onclick="setSurgeMinAiFilter(80)">≥ 80分 高勝率</button>
+
+              <span class="surge-filter-label" style="margin-left:8px;">🏛️ 市場：</span>
+              <button class="surge-filter-btn active" data-surge-market="all" onclick="setSurgeMarketFilter('all')">全市場</button>
+              <button class="surge-filter-btn" data-surge-market="TWSE上市" onclick="setSurgeMarketFilter('TWSE上市')">上市</button>
+              <button class="surge-filter-btn" data-surge-market="TPEx上櫃" onclick="setSurgeMarketFilter('TPEx上櫃')">上櫃</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 控制列：呈現模式、族群快速過濾標籤、排序規則 -->
+        <div class="panel filter-panel-card" style="margin-bottom: 15px; padding: 14px 18px;">
+          <!-- 呈現模式選擇 (族群彩色框 vs 全市場總榜) -->
+          <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <span style="font-weight: 800; color: var(--text-main); font-size: 0.88rem;">👁️ 呈現模式：</span>
+              <button class="preset-btn active" id="surge-tab-mode-grouped" onclick="setSurgeTabMode('grouped')" style="display:flex; align-items:center; gap:6px;">
+                🏷️ 族群分組 (彩色框)
+              </button>
+              <button class="preset-btn" id="surge-tab-mode-flat" onclick="setSurgeTabMode('flat')" style="display:flex; align-items:center; gap:6px;">
+                📋 全市場總榜 (Top 50)
+              </button>
+            </div>
+            <div style="font-size:0.8rem; color:#94a3b8;" id="surge-tab-refresh-text">
+              🟢 即時串流更新中 (每秒撮合)
+            </div>
+          </div>
+
+          <!-- 橫向滾動產業族群快速過濾標籤 (Chips) -->
+          <div id="surge-tab-sector-chips-wrap" style="margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+              <span style="font-weight: 700; color: #94a3b8; font-size: 0.78rem;">🎯 產業族群快篩：</span>
+            </div>
+            <div id="surge-tab-sector-chips" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin;">
+              <!-- 由 JS 動態注入族群 Chips -->
+            </div>
+          </div>
+
+          <!-- 排序規則 -->
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <span style="font-weight: 700; color: var(--text-main); font-size: 0.85rem;">⚡ 排序規則：</span>
+            <button class="preset-btn active" id="surge-tab-sort-surge" onclick="setSurgeTabSort('surge')">⚡ 急拉推升幅度最高</button>
+            <button class="preset-btn" id="surge-tab-sort-time" onclick="setSurgeTabSort('time')">🕐 最新急拉時間</button>
+            <button class="preset-btn" id="surge-tab-sort-growth" onclick="setSurgeTabSort('growth')">🔥 今日總漲幅最高</button>
+            <button class="preset-btn" id="surge-tab-sort-ai" onclick="setSurgeTabSort('ai')">🤖 AI綜合量化評分</button>
+          </div>
+        </div>
+
+        <!-- 視圖 1: 族群彩色發光邊框分組視圖 (預設) -->
+        <div id="surge-tab-grouped-view" style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- 由 JS 動態依族群注入包含發光彩色邊框的容器 -->
+          <div style="text-align:center; padding: 40px; color:#94a3b8;">🔄 正在載入族群急拉彩色框...</div>
+        </div>
+
+        <!-- 視圖 2: 總榜 12 欄位詳細數據表 -->
+        <div id="surge-tab-flat-view" class="panel" style="display: none;">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:50px; text-align:center;">#</th>
+                  <th>股票代號</th>
+                  <th>股票名稱</th>
+                  <th>即時現價</th>
+                  <th>今日漲幅</th>
+                  <th>急拉型態</th>
+                  <th>急拉推升幅度</th>
+                  <th>起拉價 ➔ 現價</th>
+                  <th>成交量 (張)</th>
+                  <th>所屬產業</th>
+                  <th>AI 突破評分</th>
+                  <th>操作決策</th>
+                </tr>
+              </thead>
+              <tbody id="surge-tab-body">
+                <tr><td colspan="12" style="text-align:center; padding: 40px;">🔄 正在載入 50 檔盤中急拉標的...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 盤中急拉全市場綜合混排 (不分族群) 專屬 Tab -->
+      <section id="surge-mixed-tab" class="tab-pane">
+        <div class="panel header-panel" style="border-left: 4px solid #f59e0b; background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.08));">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h2 style="color:#fbbf24; display:flex; align-items:center; gap:8px;">⚡ 盤中急拉 · 全市場綜合混排 (Top 50 精選·不分族群)</h2>
+              <p style="margin-top:6px; color:#cbd5e1;">
+                全市場 50 檔短時間快速急拉推升標的直接混合競價排列，<strong>無產業族群邊框束縛</strong>，一覽全市場短線最強噴出速度與動能之王！
+              </p>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <button onclick="switchTab('surge-tab')" style="background:rgba(239,68,68,0.18); border:1px solid rgba(239,68,68,0.4); color:#fca5a5; font-size:0.8rem; font-weight:700; padding:6px 12px; border-radius:10px; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all 0.2s;">
+                🏷️ 切換查看【產業族群彩色框】»
+              </button>
+              <span id="surge-mixed-count-badge" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; font-size:0.85rem; font-weight:800; padding:4px 12px; border-radius:20px;">
+                50 檔就緒
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⚡ 即時急拉量化統計看板 (Surge Real-time Metrics Banner - 混排版) -->
+        <div class="surge-metrics-bar">
+          <div class="surge-metric-card">
+            <span class="metric-label">⚡ 全市場急拉競價</span>
+            <span class="metric-val" id="surge-mixed-metric-total" style="color:#fbbf24;">50 <span style="font-size:0.8rem;color:#94a3b8;">檔</span></span>
+          </div>
+          <div class="surge-metric-card">
+            <span class="metric-label">🚀 平均急拉推升</span>
+            <span class="metric-val" id="surge-mixed-metric-avg" style="color:#fbbf24;">+0.00%</span>
+          </div>
+          <div class="surge-metric-card">
+            <span class="metric-label">🔥 全市場噴出榜首</span>
+            <span class="metric-val" id="surge-mixed-metric-top" style="color:#38bdf8; font-size:1.0rem;">--</span>
+          </div>
+          <div class="surge-metric-card">
+            <span class="metric-label">🏆 最強起漲族群</span>
+            <span class="metric-val" id="surge-mixed-metric-sector" style="color:#a855f7; font-size:1.0rem;">--</span>
+          </div>
+          <div class="surge-metric-card" style="justify-content:center; align-items:flex-start; gap:6px;">
+            <div style="display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap;">
+              <button id="surge-mixed-sound-toggle-btn" class="surge-sound-btn" onclick="toggleSurgeAlertSound()" title="當有新的高速急拉股票時觸發音效提示">
+                🔔 警報音效: 關閉
+              </button>
+              <button id="surge-mixed-freeze-stream-btn" class="surge-filter-btn" onclick="toggleSurgeStreamFreeze()" style="padding:4px 10px;" title="鎖定目前即時排列，避免畫面跳動">
+                🔴 實時串流中
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⚡ 極速多維精準篩選控制台 (Precision Real-Time Filter Console - 混排版) -->
+        <div class="surge-precision-filter-bar">
+          <!-- 搜尋列與快速重設 -->
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div style="position:relative; flex:1; min-width:240px;">
+              <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#94a3b8; pointer-events:none;">🔍</span>
+              <input type="text" id="surge-mixed-filter-search" class="surge-search-input" placeholder="極速即時篩選：輸入代號、名稱、產業概念 (快捷鍵 /)..." oninput="onSurgeMixedFilterChange()">
+            </div>
+            <button class="surge-filter-btn" onclick="resetSurgeFilters()" style="padding:8px 14px; background:rgba(245,158,11,0.15); border-color:rgba(245,158,11,0.4); color:#fde68a;" title="清除所有篩選條件，顯示全部 50 檔">
+              🔄 重設篩選
+            </button>
+            <span id="surge-mixed-filter-matched-badge" style="font-size:0.8rem; font-weight:800; color:#fbbf24; background:rgba(245,158,11,0.12); padding:5px 12px; border-radius:8px; border:1px solid rgba(245,158,11,0.3); white-space:nowrap;">
+              50 / 50 檔
+            </span>
+          </div>
+
+          <!-- 精準維度篩選組 -->
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <!-- 1. 急拉推升週期 -->
+            <div class="surge-filter-pills-row">
+              <span class="surge-filter-label">⚡ 急拉型態：</span>
+              <button class="surge-filter-btn active-amber" data-surge-type="all" onclick="setSurgeTypeFilter('all')">全部型態</button>
+              <button class="surge-filter-btn" data-surge-type="1m" onclick="setSurgeTypeFilter('1m')">⚡ 1分鐘極速拉升</button>
+              <button class="surge-filter-btn" data-surge-type="3m" onclick="setSurgeTypeFilter('3m')">⚡ 3分鐘強攻</button>
+              <button class="surge-filter-btn" data-surge-type="5m" onclick="setSurgeTypeFilter('5m')">⚡ 5分鐘主升</button>
+              <button class="surge-filter-btn" data-surge-type="wave" onclick="setSurgeTypeFilter('wave')">⚡ 波段推升</button>
+            </div>
+
+            <!-- 2. 推升幅度下限 & 成交量門檻 & AI勝率 & 市場板塊 -->
+            <div class="surge-filter-pills-row">
+              <span class="surge-filter-label">📈 推升幅度：</span>
+              <button class="surge-filter-btn active-amber" data-surge-minpct="0" onclick="setSurgeMinPctFilter(0)">不限</button>
+              <button class="surge-filter-btn" data-surge-minpct="2" onclick="setSurgeMinPctFilter(2)">≥ 2%</button>
+              <button class="surge-filter-btn" data-surge-minpct="3" onclick="setSurgeMinPctFilter(3)">≥ 3%</button>
+              <button class="surge-filter-btn" data-surge-minpct="5" onclick="setSurgeMinPctFilter(5)">≥ 5%</button>
+              <button class="surge-filter-btn" data-surge-minpct="7" onclick="setSurgeMinPctFilter(7)">≥ 7% 強噴</button>
+
+              <span class="surge-filter-label" style="margin-left:8px;">📊 成交量：</span>
+              <button class="surge-filter-btn active-amber" data-surge-minvol="0" onclick="setSurgeMinVolFilter(0)">不限</button>
+              <button class="surge-filter-btn" data-surge-minvol="1000" onclick="setSurgeMinVolFilter(1000)">≥ 1,000張</button>
+              <button class="surge-filter-btn" data-surge-minvol="3000" onclick="setSurgeMinVolFilter(3000)">≥ 3,000張</button>
+              <button class="surge-filter-btn" data-surge-minvol="5000" onclick="setSurgeMinVolFilter(5000)">≥ 5,000張</button>
+              <button class="surge-filter-btn" data-surge-minvol="10000" onclick="setSurgeMinVolFilter(10000)">≥ 1萬張</button>
+
+              <span class="surge-filter-label" style="margin-left:8px;">🤖 AI勝率：</span>
+              <button class="surge-filter-btn active-amber" data-surge-minai="0" onclick="setSurgeMinAiFilter(0)">不限</button>
+              <button class="surge-filter-btn" data-surge-minai="70" onclick="setSurgeMinAiFilter(70)">≥ 70分</button>
+              <button class="surge-filter-btn" data-surge-minai="80" onclick="setSurgeMinAiFilter(80)">≥ 80分 高勝率</button>
+
+              <span class="surge-filter-label" style="margin-left:8px;">🏛️ 市場：</span>
+              <button class="surge-filter-btn active-amber" data-surge-market="all" onclick="setSurgeMarketFilter('all')">全市場</button>
+              <button class="surge-filter-btn" data-surge-market="TWSE上市" onclick="setSurgeMarketFilter('TWSE上市')">上市</button>
+              <button class="surge-filter-btn" data-surge-market="TPEx上櫃" onclick="setSurgeMarketFilter('TPEx上櫃')">上櫃</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 控制列：呈現格式切換 (卡片流 vs 數據表) 與 排序規則 -->
+        <div class="panel filter-panel-card" style="margin-bottom: 16px; padding: 14px 18px;">
+          <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <span style="font-weight: 800; color: var(--text-main); font-size: 0.88rem;">👁️ 呈現格式：</span>
+              <button class="preset-btn active" id="surge-mixed-format-cards" onclick="setSurgeMixedFormat('cards')" style="display:flex; align-items:center; gap:6px;">
+                🎴 即時卡片瀑布流 (4欄混排)
+              </button>
+              <button class="preset-btn" id="surge-mixed-format-table" onclick="setSurgeMixedFormat('table')" style="display:flex; align-items:center; gap:6px;">
+                📋 12 欄位詳細數據總表
+              </button>
+            </div>
+            <div style="font-size:0.8rem; color:#94a3b8;" id="surge-mixed-refresh-text">
+              🔴 全市場個股混排 · 每秒即時撮合串流中
+            </div>
+          </div>
+
+          <!-- 排序規則 -->
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <span style="font-weight: 700; color: var(--text-main); font-size: 0.85rem;">⚡ 排序規則：</span>
+            <button class="preset-btn active" id="surge-mixed-sort-surge" onclick="setSurgeMixedSort('surge')">⚡ 急拉推升幅度最高</button>
+            <button class="preset-btn" id="surge-mixed-sort-time" onclick="setSurgeMixedSort('time')">🕐 最新急拉時間</button>
+            <button class="preset-btn" id="surge-mixed-sort-growth" onclick="setSurgeMixedSort('growth')">🔥 今日總漲幅最高</button>
+            <button class="preset-btn" id="surge-mixed-sort-ai" onclick="setSurgeMixedSort('ai')">🤖 AI綜合量化評分</button>
+          </div>
+        </div>
+
+        <!-- 視圖 1: 全市場混排 4 欄即時卡片流 (預設) -->
+        <div id="surge-mixed-cards-view" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;">
+          <div style="grid-column: 1 / -1; text-align:center; padding: 40px; color:#94a3b8;">🔄 正在載入全市場混排急拉標的...</div>
+        </div>
+
+        <!-- 視圖 2: 全市場混排 12 欄詳細數據表 -->
+        <div id="surge-mixed-table-view" class="panel" style="display: none;">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:50px; text-align:center;">#</th>
+                  <th>股票代號</th>
+                  <th>股票名稱</th>
+                  <th>即時現價</th>
+                  <th>今日漲幅</th>
+                  <th>急拉型態</th>
+                  <th>急拉推升幅度</th>
+                  <th>起拉價 ➔ 現價</th>
+                  <th>成交量 (張)</th>
+                  <th>所屬產業</th>
+                  <th>AI 突破評分</th>
+                  <th>操作決策</th>
+                </tr>
+              </thead>
+              <tbody id="surge-mixed-table-body">
+                <tr><td colspan="12" style="text-align:center; padding: 40px;">🔄 正在載入全市場混排急拉標的...</td></tr>
               </tbody>
             </table>
           </div>
@@ -220,48 +626,131 @@
       </section>
 
 
-      <!-- 分頁 5: LOCAL AI MARKET ANALYST -->
-      <section class="tab-pane" id="ai-analyst">
-        <div class="ai-analyst-layout">
-          <div class="ai-sidebar">
-            <h3>本地 AI 股市買點診斷</h3>
-            <p>由部署於 <code>172.22.31.23</code> 伺服器端之 <strong>Qwen 2.5 (7B)</strong> 即時運算，提供無額度限制的買點與目標價分析。</p>
-            <div class="preset-queries">
-              <h4>推薦診斷問題</h4>
-              <button class="ai-prompt-btn" data-query="請分析 8,200 檔台股中飆股王 緯穎(6669) 與 世芯-KY(3661) 的目標價與進場買點。">緯穎與世芯買點分析</button>
-              <button class="ai-prompt-btn" data-query="請分析熱門台股 ETF (0050, 0056, 00878, 00919, 00940) 的殖利率與成分股爆發力。">熱門台股ETF評比</button>
-            </div>
-          </div>
 
-          <div class="ai-chat-card">
-            <div class="ai-chat-header">
-              <div class="ai-title">
-                <span>🤖 Qwen 2.5 繁體中文台股智庫</span>
-                <span class="tag-unlimited">172.22.31.23 本地端運作中</span>
-              </div>
-            </div>
-
-            <div class="ai-messages" id="ai-messages">
-              <div class="msg ai-msg">
-                <div class="msg-avatar">📈</div>
-                <div class="msg-content">
-                  <h4>您好！我是您的台股專屬 AI 分析師。</h4>
-                  <p>在「全台股實時篩選引擎」點擊任何股票的 <strong>【AI 買點診斷】</strong>，我將為您計算籌碼動向、關鍵支撐位與目標價！</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="ai-input-box">
-              <form id="ai-form">
-                <textarea id="ai-input" placeholder="請輸入個股代號或問題 (例如：分析台積電 2330 或 0050 買點)..." rows="2"></textarea>
-                <button type="submit" class="btn-send"><span>開始分析</span></button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
 
     </main>
+  </div>
+
+  <!-- 個股技術線型與即時走勢圖視窗 (Stock Chart Modal) -->
+  <div id="stock-chart-modal" class="stock-chart-modal" style="display:none;">
+    <div class="stock-modal-backdrop" onclick="closeStockChartModal()"></div>
+    <div class="stock-modal-container" role="dialog" aria-modal="true">
+      <!-- Modal Header -->
+      <div class="stock-modal-header">
+        <div class="stock-modal-title-group">
+          <div class="stock-modal-main-title">
+            <span class="stock-modal-name" id="modal-stock-name">--</span>
+            <span class="stock-modal-code" id="modal-stock-code">--</span>
+            <span class="stock-modal-pill" id="modal-stock-market">--</span>
+            <span class="stock-modal-pill pill-blue" id="modal-stock-sector">--</span>
+            <span class="stock-modal-surge-badge" id="modal-stock-surge-badge">--</span>
+          </div>
+          <div class="stock-modal-sub-info" id="modal-stock-sub-info">
+            <!-- 實時股價、漲跌、量能、開盤/高/低 -->
+          </div>
+        </div>
+        <button class="stock-modal-close-btn" onclick="closeStockChartModal()" title="關閉 (ESC)">✕</button>
+      </div>
+
+      <!-- Quick Indicator Grid -->
+      <div class="stock-modal-metrics-grid" id="modal-stock-metrics-grid">
+        <!-- MA, 布林, RSI, KD, MACD, 20日新高 等 -->
+      </div>
+
+      <!-- 統一圖表週期控制列 (始終固定，切換絕不消失) -->
+      <div class="stock-modal-unified-bar">
+        <!-- 核心時間週期選擇器 (一鍵切換 盤中即時 / 5日 / 日線 / 周線 / 月線 / 急拉時序) -->
+        <div class="modal-timeframe-selector" id="modal-timeframe-selector">
+          <button class="modal-tf-btn active" id="tf-btn-intraday" onclick="setModalChartPeriod('intraday')" title="09:00~13:30 盤中分時即時走勢圖，含平盤線、均價線與秒級撮合">
+            <span class="tf-icon">⚡</span> 盤中即時
+          </button>
+          <button class="modal-tf-btn" id="tf-btn-5d" onclick="setModalChartPeriod('5d')">
+            <span class="tf-icon">📊</span> 5日走勢
+          </button>
+          <button class="modal-tf-btn" id="tf-btn-day" onclick="setModalChartPeriod('day')">
+            <span class="tf-icon">🕯️</span> 日線 (日K)
+          </button>
+          <button class="modal-tf-btn" id="tf-btn-week" onclick="setModalChartPeriod('week')">
+            <span class="tf-icon">📈</span> 周線 (周K)
+          </button>
+          <button class="modal-tf-btn" id="tf-btn-month" onclick="setModalChartPeriod('month')">
+            <span class="tf-icon">📅</span> 月線 (月K)
+          </button>
+          <button class="modal-tf-btn" id="tf-btn-surge" onclick="setModalChartPeriod('surge')">
+            <span class="tf-icon">🚀</span> 急拉時序
+          </button>
+        </div>
+
+        <!-- 視圖引擎切換 (極速原生圖表 vs TradingView 專業K線) -->
+        <div class="modal-engine-toggle">
+          <button class="engine-toggle-btn active" id="engine-btn-native" onclick="setModalChartEngine('native')" title="0秒極速原生載入，包含均線、布林通道與即時撮合">
+            ⚡ 原生圖表
+          </button>
+          <button class="engine-toggle-btn" id="engine-btn-tv" onclick="setModalChartEngine('tv')" title="TradingView 國際專業互動K線">
+            🕯️ TradingView
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Body -->
+      <div class="stock-modal-body">
+        <!-- 1. 原生圖表視圖 (Canvas) -->
+        <div id="modal-engine-pane-native" class="modal-engine-pane active">
+          <div class="chart-canvas-wrapper">
+            <canvas id="stock-modal-line-chart"></canvas>
+          </div>
+          <div class="chart-legend-notes" id="modal-chart-notes"></div>
+        </div>
+
+        <!-- 2. TradingView 專業K線視圖 (Iframe) -->
+        <div id="modal-engine-pane-tv" class="modal-engine-pane" style="display:none;">
+          <div class="tv-subbar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:#94a3b8;">
+              <span style="font-weight:700; color:#cbd5e1;">TradingView 週期:</span>
+              <button class="tv-interval-btn active" id="tv-interval-1" onclick="setTvIntervalDirect('1')">1分K (盤中即時)</button>
+              <button class="tv-interval-btn" id="tv-interval-5" onclick="setTvIntervalDirect('5')">5分K</button>
+              <button class="tv-interval-btn" id="tv-interval-D" onclick="setTvIntervalDirect('D')">日K (日線)</button>
+              <button class="tv-interval-btn" id="tv-interval-W" onclick="setTvIntervalDirect('W')">周K (周線)</button>
+              <button class="tv-interval-btn" id="tv-interval-M" onclick="setTvIntervalDirect('M')">月K (月線)</button>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button id="modal-tv-twse-btn" class="tv-market-btn active" onclick="setTvMarket('TWSE')">TWSE (上市)</button>
+              <button id="modal-tv-tpex-btn" class="tv-market-btn" onclick="setTvMarket('TPEX')">TPEX (上櫃)</button>
+            </div>
+          </div>
+          <div id="modal-tv-iframe-container" style="height:430px; width:100%; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.1); background:#0a0e17;"></div>
+        </div>
+
+        <!-- AI & Quant Summary Box -->
+        <div id="modal-stock-ai-reason" class="stock-modal-ai-box" style="display:none;"></div>
+      </div>
+
+      <!-- Footer Action Bar -->
+      <div class="stock-modal-footer">
+        <div class="modal-footer-left">
+          <button class="modal-btn-locate" onclick="locateStockInTable()">
+            🔍 在篩選表中定位此股票
+          </button>
+        </div>
+        <div class="modal-footer-right">
+          <a id="modal-link-yahoo-tech" target="_blank" rel="noopener" class="modal-link-btn" title="在 Yahoo 奇摩股市查看完整技術線型 (含5日/週/月K)">
+            📊 Yahoo 技術分析 ↗
+          </a>
+          <a id="modal-link-yahoo" target="_blank" rel="noopener" class="modal-link-btn" title="在 Yahoo 奇摩股市查看即時走勢與五檔明細">
+            📊 Yahoo 股市 ↗
+          </a>
+          <a id="modal-link-tv" target="_blank" rel="noopener" class="modal-link-btn" title="在 TradingView 查看全螢幕圖表">
+            📈 TradingView ↗
+          </a>
+          <a id="modal-link-wantgoo" target="_blank" rel="noopener" class="modal-link-btn" title="在玩股網查看籌碼與線型">
+            📑 玩股網 ↗
+          </a>
+          <a id="modal-link-goodinfo" target="_blank" rel="noopener" class="modal-link-btn" title="在 Goodinfo 查看個股詳細基本面">
+            ℹ️ Goodinfo! ↗
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 </body>
 </html>

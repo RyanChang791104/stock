@@ -1,0 +1,576 @@
+[
+  {
+    "date": "2026-09-02",
+    "prev_date": "2026-09-01",
+    "total_evaluated": 50,
+    "hit_rate_pct": 0.0,
+    "avg_return_pct": 0.0,
+    "hits": 0,
+    "misses": 50,
+    "top_hits": [],
+    "top_misses": [
+      {
+        "symbol": "2317.TW",
+        "name": "鴻海",
+        "prev_price": 256.0,
+        "curr_price": 256.0,
+        "actual_return": 0.0,
+        "ai_score": 92.1,
+        "theme_tag": "CoWoS AI伺服器"
+      },
+      {
+        "symbol": "3013.TW",
+        "name": "晟銘電",
+        "prev_price": 92.4,
+        "curr_price": 92.4,
+        "actual_return": 0.0,
+        "ai_score": 91.6,
+        "theme_tag": "CoWoS AI伺服器"
+      },
+      {
+        "symbol": "6669.TW",
+        "name": "緯穎",
+        "prev_price": 7800.0,
+        "curr_price": 7800.0,
+        "actual_return": 0.0,
+        "ai_score": 91.3,
+        "theme_tag": "CoWoS AI伺服器"
+      },
+      {
+        "symbol": "2382.TW",
+        "name": "廣達",
+        "prev_price": 342.0,
+        "curr_price": 342.0,
+        "actual_return": 0.0,
+        "ai_score": 89.9,
+        "theme_tag": "電腦週邊"
+      },
+      {
+        "symbol": "2368.TW",
+        "name": "金像電",
+        "prev_price": 1225.0,
+        "curr_price": 1225.0,
+        "actual_return": 0.0,
+        "ai_score": 89.3,
+        "theme_tag": "高速光通訊"
+      }
+    ],
+    "factor_correlation": {
+      "theme": 0.0,
+      "capital": 0.0,
+      "tech": 0.0,
+      "macro": 0.0,
+      "trend": 0.0
+    },
+    "old_weights": {
+      "theme": 0.2,
+      "capital": 0.25,
+      "tech": 0.25,
+      "macro": 0.15,
+      "trend": 0.15
+    },
+    "new_weights": {
+      "theme": 0.2,
+      "capital": 0.25,
+      "tech": 0.25,
+      "macro": 0.15,
+      "trend": 0.15
+    }
+  },
+  {
+    "date": "2026-09-03",
+    "prev_date": "2026-09-02",
+    "total_evaluated": 50,
+    "hit_rate_pct": 24.0,
+    "avg_return_pct": -2.66,
+    "hits": 12,
+    "misses": 38,
+    "top_hits": [
+      {
+        "symbol": "6451.TW",
+        "name": "訊芯-KY",
+        "prev_price": 455.0,
+        "curr_price": 500.0,
+        "actual_return": 9.89,
+        "ai_score": 80.4,
+        "theme_tag": "矽光子 CPO"
+      },
+      {
+        "symbol": "3324.TWO",
+        "name": "雙鴻",
+        "prev_price": 1375.0,
+        "curr_price": 1435.0,
+        "actual_return": 4.36,
+        "ai_score": 84.9,
+        "theme_tag": "AI水冷散熱"
+      },
+      {
+        "symbol": "5274.TWO",
+        "name": "信驊",
+        "prev_price": 17120.0,
+        "curr_price": 17725.0,
+        "actual_return": 3.53,
+        "ai_score": 82.5,
+        "theme_tag": "伺服器管理晶片"
+      },
+      {
+        "symbol": "6505.TW",
+        "name": "台塑化",
+        "prev_price": 76.7,
+        "curr_price": 78.7,
+        "actual_return": 2.61,
+        "ai_score": 72.3,
+        "theme_tag": "23"
+      },
+      {
+        "symbol": "6515.TW",
+        "name": "穎崴",
+        "prev_price": 6910.0,
+        "curr_price": 7050.0,
+        "actual_return": 2.03,
+        "ai_score": 76.4,
+        "theme_tag": "半導體"
+      }
+    ],
+    "top_misses": [
+      {
+        "symbol": "6669.TW",
+        "name": "緯穎",
+        "prev_price": 7800.0,
+        "curr_price": 2610.0,
+        "actual_return": -66.54,
+        "ai_score": 85.7,
+        "theme_tag": "CoWoS AI伺服器"
+      },
+      {
+        "symbol": "3529.TWO",
+        "name": "力旺",
+        "prev_price": 2640.0,
+        "curr_price": 2395.0,
+        "actual_return": -9.28,
+        "ai_score": 72.6,
+        "theme_tag": "HBM/DDR5記憶體"
+      },
+      {
+        "symbol": "2308.TW",
+        "name": "台達電",
+        "prev_price": 1865.0,
+        "curr_price": 1730.0,
+        "actual_return": -7.24,
+        "ai_score": 86.2,
+        "theme_tag": "AI水冷散熱"
+      },
+      {
+        "symbol": "1560.TW",
+        "name": "中砂",
+        "prev_price": 744.0,
+        "curr_price": 704.0,
+        "actual_return": -5.38,
+        "ai_score": 82.5,
+        "theme_tag": "半導體"
+      },
+      {
+        "symbol": "4908.TWO",
+        "name": "前鼎",
+        "prev_price": 229.5,
+        "curr_price": 218.0,
+        "actual_return": -5.01,
+        "ai_score": 83.8,
+        "theme_tag": "矽光子 CPO"
+      }
+    ],
+    "factor_correlation": {
+      "theme": 0.0,
+      "capital": 0.0,
+      "tech": 0.0158,
+      "macro": 0.0,
+      "trend": 0.0
+    },
+    "old_weights": {
+      "theme": 0.2,
+      "capital": 0.25,
+      "tech": 0.25,
+      "macro": 0.15,
+      "trend": 0.15
+    },
+    "new_weights": {
+      "theme": 0.1514,
+      "capital": 0.1892,
+      "tech": 0.4324,
+      "macro": 0.1135,
+      "trend": 0.1135
+    }
+  },
+  {
+    "date": "2026-09-04",
+    "prev_date": "2026-09-03",
+    "total_evaluated": 50,
+    "hit_rate_pct": 26.0,
+    "avg_return_pct": -2.23,
+    "hits": 13,
+    "misses": 37,
+    "top_hits": [
+      {
+        "symbol": "2886.TW",
+        "name": "兆豐金",
+        "prev_price": 49.0,
+        "curr_price": 50.4,
+        "actual_return": 2.86,
+        "ai_score": 69.7,
+        "theme_tag": "17"
+      },
+      {
+        "symbol": "2885.TW",
+        "name": "元大金",
+        "prev_price": 66.7,
+        "curr_price": 68.5,
+        "actual_return": 2.7,
+        "ai_score": 71.2,
+        "theme_tag": "17"
+      },
+      {
+        "symbol": "2897.TW",
+        "name": "王道銀行",
+        "prev_price": 10.7,
+        "curr_price": 10.9,
+        "actual_return": 1.87,
+        "ai_score": 72.2,
+        "theme_tag": "金融避風港"
+      },
+      {
+        "symbol": "2308.TW",
+        "name": "台達電",
+        "prev_price": 1730.0,
+        "curr_price": 1760.0,
+        "actual_return": 1.73,
+        "ai_score": 74.3,
+        "theme_tag": "AI水冷散熱"
+      },
+      {
+        "symbol": "3231.TW",
+        "name": "緯創",
+        "prev_price": 185.5,
+        "curr_price": 188.5,
+        "actual_return": 1.62,
+        "ai_score": 81.5,
+        "theme_tag": "電腦週邊"
+      }
+    ],
+    "top_misses": [
+      {
+        "symbol": "6451.TW",
+        "name": "訊芯-KY",
+        "prev_price": 500.0,
+        "curr_price": 450.0,
+        "actual_return": -10.0,
+        "ai_score": 85.0,
+        "theme_tag": "矽光子 CPO"
+      },
+      {
+        "symbol": "4979.TWO",
+        "name": "華星光",
+        "prev_price": 624.0,
+        "curr_price": 572.0,
+        "actual_return": -8.33,
+        "ai_score": 80.6,
+        "theme_tag": "矽光子 CPO"
+      },
+      {
+        "symbol": "3081.TWO",
+        "name": "聯亞",
+        "prev_price": 3395.0,
+        "curr_price": 3120.0,
+        "actual_return": -8.1,
+        "ai_score": 70.8,
+        "theme_tag": "矽光子 CPO"
+      },
+      {
+        "symbol": "1303.TW",
+        "name": "南亞",
+        "prev_price": 237.5,
+        "curr_price": 221.0,
+        "actual_return": -6.95,
+        "ai_score": 70.5,
+        "theme_tag": "03"
+      },
+      {
+        "symbol": "2368.TW",
+        "name": "金像電",
+        "prev_price": 1175.0,
+        "curr_price": 1100.0,
+        "actual_return": -6.38,
+        "ai_score": 83.4,
+        "theme_tag": "高速光通訊"
+      }
+    ],
+    "factor_correlation": {
+      "theme": 0.0,
+      "capital": 0.0,
+      "tech": 0.0,
+      "macro": 0.0,
+      "trend": 0.2424
+    },
+    "old_weights": {
+      "theme": 0.1514,
+      "capital": 0.1892,
+      "tech": 0.4324,
+      "macro": 0.1135,
+      "trend": 0.1135
+    },
+    "new_weights": {
+      "theme": 0.106,
+      "capital": 0.1324,
+      "tech": 0.3027,
+      "macro": 0.0794,
+      "trend": 0.3794
+    }
+  },
+  {
+    "date": "2026-09-07",
+    "prev_date": "2026-09-04",
+    "total_evaluated": 50,
+    "hit_rate_pct": 62.0,
+    "avg_return_pct": 1.56,
+    "hits": 31,
+    "misses": 19,
+    "top_hits": [
+      {
+        "symbol": "3324.TWO",
+        "name": "雙鴻",
+        "prev_price": 1350.0,
+        "curr_price": 1485.0,
+        "actual_return": 10.0,
+        "ai_score": 77.0,
+        "theme_tag": "AI水冷散熱"
+      },
+      {
+        "symbol": "4979.TWO",
+        "name": "華星光",
+        "prev_price": 572.0,
+        "curr_price": 629.0,
+        "actual_return": 9.97,
+        "ai_score": 76.9,
+        "theme_tag": "矽光子 CPO"
+      },
+      {
+        "symbol": "4908.TWO",
+        "name": "前鼎",
+        "prev_price": 204.5,
+        "curr_price": 224.5,
+        "actual_return": 9.78,
+        "ai_score": 74.8,
+        "theme_tag": "矽光子 CPO"
+      },
+      {
+        "symbol": "3017.TW",
+        "name": "奇鋐",
+        "prev_price": 3300.0,
+        "curr_price": 3570.0,
+        "actual_return": 8.18,
+        "ai_score": 80.6,
+        "theme_tag": "CoWoS AI伺服器"
+      },
+      {
+        "symbol": "3163.TWO",
+        "name": "波若威",
+        "prev_price": 720.0,
+        "curr_price": 775.0,
+        "actual_return": 7.64,
+        "ai_score": 71.8,
+        "theme_tag": "矽光子 CPO"
+      }
+    ],
+    "top_misses": [
+      {
+        "symbol": "3363.TWO",
+        "name": "上詮",
+        "prev_price": 774.0,
+        "curr_price": 735.0,
+        "actual_return": -5.04,
+        "ai_score": 72.6,
+        "theme_tag": "矽光子 CPO"
+      },
+      {
+        "symbol": "2368.TW",
+        "name": "金像電",
+        "prev_price": 1100.0,
+        "curr_price": 1045.0,
+        "actual_return": -5.0,
+        "ai_score": 77.4,
+        "theme_tag": "高速光通訊"
+      },
+      {
+        "symbol": "3583.TW",
+        "name": "辛耘",
+        "prev_price": 742.0,
+        "curr_price": 711.0,
+        "actual_return": -4.18,
+        "ai_score": 81.9,
+        "theme_tag": "CoWoS AI伺服器"
+      },
+      {
+        "symbol": "3037.TW",
+        "name": "欣興",
+        "prev_price": 923.0,
+        "curr_price": 902.0,
+        "actual_return": -2.28,
+        "ai_score": 70.1,
+        "theme_tag": "先進封裝載板"
+      },
+      {
+        "symbol": "1560.TW",
+        "name": "中砂",
+        "prev_price": 711.0,
+        "curr_price": 695.0,
+        "actual_return": -2.25,
+        "ai_score": 81.4,
+        "theme_tag": "半導體"
+      }
+    ],
+    "factor_correlation": {
+      "theme": 0.3221,
+      "capital": 0.1636,
+      "tech": 0.0,
+      "macro": 0.0,
+      "trend": 0.1302
+    },
+    "old_weights": {
+      "theme": 0.106,
+      "capital": 0.1324,
+      "tech": 0.3027,
+      "macro": 0.0794,
+      "trend": 0.3794
+    },
+    "new_weights": {
+      "theme": 0.2311,
+      "capital": 0.1724,
+      "tech": 0.2119,
+      "macro": 0.0556,
+      "trend": 0.329
+    }
+  },
+  {
+    "date": "2026-09-08",
+    "prev_date": "2026-09-07",
+    "total_evaluated": 50,
+    "hit_rate_pct": 38.0,
+    "avg_return_pct": -0.03,
+    "hits": 19,
+    "misses": 31,
+    "top_hits": [
+      {
+        "symbol": "2303.TW",
+        "name": "聯電",
+        "prev_price": 130.0,
+        "curr_price": 143.0,
+        "actual_return": 10.0,
+        "ai_score": 80.2,
+        "theme_tag": "半導體"
+      },
+      {
+        "symbol": "2454.TW",
+        "name": "聯發科",
+        "prev_price": 4415.0,
+        "curr_price": 4760.0,
+        "actual_return": 7.81,
+        "ai_score": 74.7,
+        "theme_tag": "半導體"
+      },
+      {
+        "symbol": "2368.TW",
+        "name": "金像電",
+        "prev_price": 1045.0,
+        "curr_price": 1120.0,
+        "actual_return": 7.18,
+        "ai_score": 79.5,
+        "theme_tag": "高速光通訊"
+      },
+      {
+        "symbol": "3131.TWO",
+        "name": "弘塑",
+        "prev_price": 2385.0,
+        "curr_price": 2555.0,
+        "actual_return": 7.13,
+        "ai_score": 77.4,
+        "theme_tag": "CoWoS AI伺服器"
+      },
+      {
+        "symbol": "3037.TW",
+        "name": "欣興",
+        "prev_price": 902.0,
+        "curr_price": 949.0,
+        "actual_return": 5.21,
+        "ai_score": 71.7,
+        "theme_tag": "先進封裝載板"
+      }
+    ],
+    "top_misses": [
+      {
+        "symbol": "4979.TWO",
+        "name": "華星光",
+        "prev_price": 629.0,
+        "curr_price": 590.0,
+        "actual_return": -6.2,
+        "ai_score": 81.4,
+        "theme_tag": "矽光子 CPO"
+      },
+      {
+        "symbol": "8210.TW",
+        "name": "勤誠",
+        "prev_price": 986.0,
+        "curr_price": 937.0,
+        "actual_return": -4.97,
+        "ai_score": 78.7,
+        "theme_tag": "電腦週邊"
+      },
+      {
+        "symbol": "2395.TW",
+        "name": "研華",
+        "prev_price": 711.0,
+        "curr_price": 680.0,
+        "actual_return": -4.36,
+        "ai_score": 71.6,
+        "theme_tag": "25"
+      },
+      {
+        "symbol": "3661.TW",
+        "name": "世芯-KY",
+        "prev_price": 4220.0,
+        "curr_price": 4040.0,
+        "actual_return": -4.27,
+        "ai_score": 83.4,
+        "theme_tag": "雲端自研ASIC"
+      },
+      {
+        "symbol": "3017.TW",
+        "name": "奇鋐",
+        "prev_price": 3570.0,
+        "curr_price": 3420.0,
+        "actual_return": -4.2,
+        "ai_score": 88.2,
+        "theme_tag": "CoWoS AI伺服器"
+      }
+    ],
+    "factor_correlation": {
+      "theme": 0.0044,
+      "capital": 0.1054,
+      "tech": 0.0,
+      "macro": 0.0003,
+      "trend": 0.0
+    },
+    "old_weights": {
+      "theme": 0.2311,
+      "capital": 0.1724,
+      "tech": 0.2119,
+      "macro": 0.0556,
+      "trend": 0.329
+    },
+    "new_weights": {
+      "theme": 0.1733,
+      "capital": 0.3991,
+      "tech": 0.148,
+      "macro": 0.0499,
+      "trend": 0.2298
+    }
+  }
+]
